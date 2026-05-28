@@ -8,7 +8,7 @@ import Blog from "@/components_home/blog";
 import Footer from "@/components_home/footer";
 
 export const metadata = {
-  title: "Elito - Creative Portfolio",
+  title: "Harsh Vashishth - Creative Portfolio",
   description: "Modern portfolio for Aliza, Fashion Designer.",
 };
 

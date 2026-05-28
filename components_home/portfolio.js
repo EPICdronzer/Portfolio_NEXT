@@ -22,7 +22,7 @@ const projects = [
   },
   {
     id: "proj-3",
-    title: "Elito - Creative Portfolio HTML5 Template",
+    title: "Harsh Vashishth - Creative Portfolio HTML5 Template",
     category: "Website / Creative",
     image: "/portfolio_screenshots.png",
     imgPos: "object-right",

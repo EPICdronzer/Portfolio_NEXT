@@ -4,12 +4,12 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 
 const navLinks = [
-  { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Service", href: "#service" },
-  { name: "Portfolio", href: "#portfolio" },
-  { name: "Blog", href: "#blog" },
-  { name: "Contact", href: "#contact" },
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Service", href: "/service" },
+  { name: "Portfolio", href: "/portfolio" },
+  { name: "Blog", href: "/blog" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
@@ -32,17 +32,17 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 flex items-center justify-between">
         {/* Logo */}
-        <a href="#home" className="flex items-center gap-3 group cursor-pointer">
+        <a href="https://github.com/EPICdronzer" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group cursor-pointer">
           <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-emerald-500/30 group-hover:border-emerald-500 transition-all duration-300">
             <Image
-              src="/logo_avatar.png"
-              alt="Elito logo"
+              src="/logo.png"
+              alt="Harsh Vashishth logo"
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-300"
             />
           </div>
           <span className="text-2xl font-extrabold tracking-tight text-white group-hover:text-emerald-400 transition-colors duration-300">
-            Elito<span className="text-emerald-400">.</span>
+            Harsh Vashishth<span className="text-emerald-400">.</span>
           </span>
         </a>
 

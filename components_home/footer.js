@@ -83,12 +83,12 @@ export default function Footer() {
 
           {/* Brand */}
           <div className="lg:col-span-1">
-            <a href="#home" className="flex items-center gap-3 group mb-5">
+            <a href="https://github.com/EPICdronzer" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group mb-5">
               <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-emerald-500/30 group-hover:border-emerald-500 transition-all duration-300">
-                <Image src="/logo_avatar.png" alt="Elito logo" fill className="object-cover" />
+                <Image src="/logo.png" alt="Harsh Vashishth logo" fill className="object-cover" />
               </div>
               <span className="text-2xl font-extrabold tracking-tight text-white">
-                Elito<span className="text-emerald-400">.</span>
+                Harsh Vashishth<span className="text-emerald-400">.</span>
               </span>
             </a>
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
@@ -112,26 +112,35 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-bold text-base mb-5 tracking-wide">Navigation</h4>
             <ul className="space-y-3">
-              {["About us", "Contact us", "Video Guide", "Recent Post"].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-gray-400 text-sm hover:text-white transition-colors duration-200 flex items-center gap-2 group">
+              {[
+                { name: "About Me", href: "/about" },
+                { name: "My Services", href: "/service" },
+                { name: "My Work", href: "/portfolio" },
+                { name: "Latest Insights", href: "/blog" },
+                { name: "Contact Me", href: "/contact" },
+              ].map((item) => (
+                <li key={item.name}>
+                  <a href={item.href} className="text-gray-400 text-sm hover:text-white transition-colors duration-200 flex items-center gap-2 group">
                     <span className="w-1.5 h-1.5 bg-gray-600 group-hover:bg-emerald-400 transition-colors duration-200 flex-shrink-0" />
-                    {item}
+                    {item.name}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* All Services */}
+          {/* Legal / Policy */}
           <div>
-            <h4 className="text-white font-bold text-base mb-5 tracking-wide">All Services</h4>
+            <h4 className="text-white font-bold text-base mb-5 tracking-wide">Policies & Legal</h4>
             <ul className="space-y-3">
-              {["Web Design", "Web Development", "Brand Identity", "Digital Marketing"].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-gray-400 text-sm hover:text-white transition-colors duration-200 flex items-center gap-2 group">
+              {[
+                { name: "Terms of Service", href: "/terms" },
+                { name: "Privacy Policy", href: "/privacy" },
+              ].map((item) => (
+                <li key={item.name}>
+                  <a href={item.href} className="text-gray-400 text-sm hover:text-white transition-colors duration-200 flex items-center gap-2 group">
                     <span className="w-1.5 h-1.5 bg-gray-600 group-hover:bg-emerald-400 transition-colors duration-200 flex-shrink-0" />
-                    {item}
+                    {item.name}
                   </a>
                 </li>
               ))}
@@ -173,7 +182,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto flex items-center justify-center">
           <p className="text-gray-500 text-xs text-center">
             Copyright © 2025{" "}
-            <span className="text-white font-semibold">Elito</span>
+            <span className="text-white font-semibold">Harsh Vashishth</span>
             . All rights reserved.
           </p>
         </div>

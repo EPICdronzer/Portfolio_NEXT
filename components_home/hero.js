@@ -2,15 +2,27 @@
 
 import React from "react";
 
+const slowGrowStyle = `
+  @keyframes slowGrow {
+    0%   { transform: scale(1.0); }
+    100% { transform: scale(1.15); }
+  }
+  .img-slow-grow {
+    animation: slowGrow 12s ease-in-out infinite alternate;
+  }
+`;
+
 export default function Hero() {
   return (
     <section id="home" className="relative bg-black min-h-screen flex flex-col justify-between overflow-hidden">
+      <style>{slowGrowStyle}</style>
+
       {/* Glow effects */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-500/10 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-amber-500/5 blur-[150px] pointer-events-none" />
 
       {/* Hero Content */}
-      <div className="flex-grow max-w-7xl mx-auto w-full px-6 md:px-12 lg:px-24 flex items-center pt-28 pb-16 md:pt-36 md:pb-24 lg:pt-40 lg:pb-32 z-10">
+      <div className="flex-grow max-w-7xl mx-auto w-full px-6 md:px-12 lg:px-24 flex items-center pt-28 pb-16 md:pt-36 md:pb-24  lg:pb-32 z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center w-full">
 
           {/* Left Column */}
@@ -51,14 +63,13 @@ export default function Hero() {
 
           {/* Right Column - Portrait */}
           <div className="lg:col-span-6 flex justify-center lg:justify-end relative">
-            <div className="relative max-w-[500px] w-full aspect-[4/5] rounded-[2rem] overflow-hidden group">
-              <div className="absolute inset-0 border-2 border-emerald-500/20 rounded-[2rem] group-hover:border-emerald-500/50 transition-all duration-500 z-20 pointer-events-none" />
+            <div className="relative w-full aspect-4/5 overflow-hidden group max-w-[260px] sm:max-w-[340px] md:max-w-[420px] lg:max-w-[520px] xl:max-w-[620px] max-h-[340px] sm:max-h-[420px] md:max-h-[520px] lg:max-h-none">
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent opacity-60 z-10" />
               <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20 z-10" />
               <img
-                src="/aliza_portrait.png"
-                alt="Aliza Portrait"
-                className="w-full h-full object-cover scale-100 group-hover:scale-[1.03] transition-all duration-700 ease-out z-0 contrast-[1.05]"
+                src="/my.png"
+                alt="Harsh Vashishth"
+                className="img-slow-grow w-full h-full object-cover z-0 contrast-[1.05] opacity-90"
               />
             </div>
           </div>
