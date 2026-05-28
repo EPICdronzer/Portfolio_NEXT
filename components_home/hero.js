@@ -38,7 +38,7 @@ export default function Hero() {
             </h2>
 
             <p className="text-gray-400 text-base md:text-lg leading-relaxed mt-6 mb-10 max-w-lg font-light">
-              Must explain to how all this mistaken idea denouncing pleasure pain the system and expound the actua.
+              Crafting premium digital experiences from Bengaluru. Blending desi aesthetics with modern technology to build scalable solutions for the next billion users.
             </p>
 
             <div>

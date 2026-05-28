@@ -265,11 +265,11 @@ export default function AboutSection() {
 
             {/* Description */}
             <p className="text-gray-400 text-base md:text-lg leading-relaxed mb-5">
-              I'm a full-stack web developer specializing in the <span className="text-emerald-400 font-semibold">MERN stack</span> and{" "}
+              I'm a full-stack web developer from Bengaluru, specializing in the <span className="text-emerald-400 font-semibold">MERN stack</span> and{" "}
               <span className="text-emerald-400 font-semibold">Next.js</span>. I love turning complex problems into elegant, fast,
-              and user-friendly solutions. With a solid grip on{" "}
+              and user-friendly solutions tailored for the Indian market. With a solid grip on{" "}
               <span className="text-amber-400 font-semibold">Java</span> and{" "}
-              <span className="text-amber-400 font-semibold">Python</span>, I build scalable software with clean architecture.
+              <span className="text-amber-400 font-semibold">Python</span>, I build scalable, high-performance software with clean architecture.
             </p>
 
             {/* Tech pills */}
