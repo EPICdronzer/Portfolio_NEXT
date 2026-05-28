@@ -138,28 +138,43 @@ export default function Services() {
           ))}
         </div>
 
-        {/* Service Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Service Cards — Swipeable on mobile, grid on desktop */}
+        {/* Mobile horizontal scroll */}
+        <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-6 px-6 snap-x snap-mandatory scrollbar-hide">
+          {servicesData[activeTab].map((service) => (
+            <Link
+              href={`/service/${service.id}`}
+              key={service.id}
+              className="snap-start flex-shrink-0 w-[75vw] max-w-[300px] group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 flex flex-col items-center text-center hover:border-amber-400/40 transition-all duration-300 cursor-pointer block"
+            >
+              <div className="w-14 h-14 rounded-full bg-zinc-800 group-hover:bg-amber-400/10 flex items-center justify-center mb-5 text-amber-400 transition-all duration-300">
+                {service.icon}
+              </div>
+              <h3 className="text-white font-bold text-base mb-2">{service.title}</h3>
+              <p className="text-gray-400 text-xs leading-relaxed mb-5">{service.desc}</p>
+              <div className="inline-flex items-center gap-2 text-gray-400 group-hover:text-amber-400 text-xs font-semibold transition-colors duration-200 mt-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                Learn More
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Desktop grid */}
+        <div className="hidden md:grid grid-cols-3 gap-6">
           {servicesData[activeTab].map((service) => (
             <Link
               href={`/service/${service.id}`}
               key={service.id}
               className="group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-8 flex flex-col items-center text-center hover:border-amber-400/40 hover:bg-[#1e1e1e] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-400/5 cursor-pointer block"
             >
-              {/* Icon Circle */}
               <div className="w-16 h-16 rounded-full bg-zinc-800 group-hover:bg-amber-400/10 flex items-center justify-center mb-6 text-amber-400 transition-all duration-300">
                 {service.icon}
               </div>
-
               <h3 className="text-white font-bold text-lg mb-3">{service.title}</h3>
               <p className="text-gray-400 text-sm leading-relaxed mb-6">{service.desc}</p>
-
-              <div
-                className="inline-flex items-center gap-2 text-gray-400 group-hover:text-amber-400 text-sm font-semibold transition-colors duration-200 mt-auto"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
+              <div className="inline-flex items-center gap-2 text-gray-400 group-hover:text-amber-400 text-sm font-semibold transition-colors duration-200 mt-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                 Learn More
               </div>
             </Link>

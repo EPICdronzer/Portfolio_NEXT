@@ -33,8 +33,8 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 flex items-center justify-between">
         {/* Logo */}
-        <a href="https://github.com/EPICdronzer" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group cursor-pointer">
-          <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-emerald-500/30 group-hover:border-emerald-500 transition-all duration-300">
+        <a href="https://github.com/EPICdronzer" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 md:gap-3 group cursor-pointer">
+          <div className="relative w-9 h-9 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-emerald-500/30 group-hover:border-emerald-500 transition-all duration-300 flex-shrink-0">
             <Image
               src="/logo.png"
               alt="Harsh Vashishth logo"
@@ -42,8 +42,12 @@ export default function Navbar() {
               className="object-cover group-hover:scale-110 transition-transform duration-300"
             />
           </div>
-          <span className="text-2xl font-extrabold tracking-tight text-white group-hover:text-emerald-400 transition-colors duration-300">
+          {/* Full name on md+, short on small */}
+          <span className="hidden sm:block text-lg md:text-2xl font-extrabold tracking-tight text-white group-hover:text-emerald-400 transition-colors duration-300 leading-none">
             Harsh Vashishth<span className="text-emerald-400">.</span>
+          </span>
+          <span className="sm:hidden text-base font-extrabold tracking-tight text-white group-hover:text-emerald-400 transition-colors duration-300">
+            HV<span className="text-emerald-400">.</span>
           </span>
         </a>
 

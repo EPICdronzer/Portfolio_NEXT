@@ -81,8 +81,51 @@ export default function Experience() {
           </p>
         </div>
 
-        {/* Experience Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Experience Cards — Swipeable on mobile, grid on desktop */}
+        {/* Mobile horizontal scroll */}
+        <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-6 px-6 snap-x snap-mandatory scrollbar-hide">
+          {experiences.map((exp, index) => (
+            <div
+              key={exp.id}
+              className="snap-start flex-shrink-0 w-[75vw] max-w-[300px] group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 flex flex-col items-center text-center hover:border-zinc-600 transition-all duration-300"
+            >
+              {/* Company Logo Icon */}
+              <div className="mb-5">
+                <CompanyIcon index={index} />
+              </div>
+
+              {/* Period */}
+              <p className="text-white font-extrabold text-2xl mb-2 tracking-tight">
+                {exp.period}
+              </p>
+
+              {/* Role */}
+              <h3 className="text-white font-bold text-base mb-2">{exp.role}</h3>
+
+              {/* Company */}
+              <p className={`${exp.companyColor} text-sm font-medium mb-1`}>
+                {exp.company}
+                {exp.companyExtra && (
+                  <span className="text-gray-500 font-normal"> {exp.companyExtra}</span>
+                )}
+              </p>
+
+              {/* Link */}
+              <a
+                href={exp.href}
+                className="inline-flex items-center gap-2 text-gray-500 hover:text-white text-sm font-semibold transition-colors duration-200 mt-5 group/link"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover/link:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+                Go to website
+              </a>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop grid */}
+        <div className="hidden md:grid grid-cols-3 gap-6">
           {experiences.map((exp, index) => (
             <div
               key={exp.id}

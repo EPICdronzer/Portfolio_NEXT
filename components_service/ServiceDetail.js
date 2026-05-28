@@ -65,6 +65,23 @@ const servicesDetailed = [
 
 export default function ServiceDetail() {
   const [activeCat, setActiveCat] = useState("Development");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const SERVICES_PER_PAGE = 3;
+
+  const filtered = servicesDetailed.filter((item) => {
+    const matchesCat = item.category === activeCat;
+    const q = search.toLowerCase();
+    const matchesSearch =
+      !q ||
+      item.title.toLowerCase().includes(q) ||
+      item.subtitle.toLowerCase().includes(q) ||
+      item.tech.some((t) => t.toLowerCase().includes(q));
+    return matchesCat && matchesSearch;
+  });
+
+  const totalPages = Math.ceil(filtered.length / SERVICES_PER_PAGE);
+  const paginated = filtered.slice((page - 1) * SERVICES_PER_PAGE, page * SERVICES_PER_PAGE);
 
   return (
     <section className="bg-[#0a0a0a] py-20 md:py-28 relative overflow-hidden">
@@ -73,12 +90,29 @@ export default function ServiceDetail() {
       <div className="absolute bottom-0 left-[-10%] w-[45%] h-[50%] rounded-full bg-indigo-500/5 blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 relative z-10">
+        {/* Search Bar */}
+        <div className="mb-8 flex items-center gap-3 bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3 focus-within:border-emerald-500/50 transition-colors duration-300">
+          <svg className="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            placeholder="Search services by name or technology…"
+            className="flex-grow bg-transparent text-white text-sm placeholder-gray-600 focus:outline-none"
+          />
+          {search && (
+            <button onClick={() => { setSearch(""); setPage(1); }} className="text-gray-500 hover:text-white transition-colors text-xs">✕ Clear</button>
+          )}
+        </div>
+
         {/* Category Tabs */}
-        <div className="flex justify-center gap-4 mb-16 flex-wrap">
+        <div className="flex justify-center gap-4 mb-12 flex-wrap">
           {["Development", "Design", "Marketing"].map((cat) => (
             <button
               key={cat}
-              onClick={() => setActiveCat(cat)}
+              onClick={() => { setActiveCat(cat); setPage(1); }}
               className={`px-8 py-3.5 rounded-full font-bold text-sm tracking-wider uppercase transition-all duration-300 ${
                 activeCat === cat
                   ? "bg-emerald-500 text-black shadow-lg shadow-emerald-500/20"
@@ -90,10 +124,14 @@ export default function ServiceDetail() {
           ))}
         </div>
 
-                {/* Detailed Service Show */}
-        {servicesDetailed
-          .filter((item) => item.category === activeCat)
-          .map((item) => (
+                {/* No results */}
+        {filtered.length === 0 && (
+          <p className="text-center py-16 text-gray-500">No services found for &ldquo;{search}&rdquo;</p>
+        )}
+
+        {/* Detailed Service Show */}
+        <div className="space-y-20">
+        {paginated.map((item) => (
             <Link href={`/service/${item.id}`} key={item.title} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center animate-fadeIn cursor-pointer group/link block">
               {/* Card visual details left */}
               <div className="lg:col-span-5">
@@ -147,7 +185,34 @@ export default function ServiceDetail() {
                 </ul>
               </div>
             </Link>
-          ))}
+        ))}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-16 flex-wrap">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button key={p} onClick={() => setPage(p)}
+                className={`w-9 h-9 rounded-full text-xs font-bold transition-all duration-200 ${
+                  page === p ? "bg-emerald-500 text-black shadow-lg shadow-emerald-500/30" : "border border-white/10 text-gray-400 hover:text-white hover:border-white"
+                }`}>{p}</button>
+            ))}
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+            </button>
+          </div>
+        )}
       </div>
       
       <style>{`
