@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 
 const servicesDetailed = [
   {
+    id: "web-dev",
     category: "Development",
     title: "Full-Stack Development",
     subtitle: "Scalable, Secure, and Blazing Fast Web Applications",
@@ -22,6 +24,7 @@ const servicesDetailed = [
     color: "from-emerald-500 to-teal-600",
   },
   {
+    id: "ui-ux",
     category: "Design",
     title: "UI/UX & Brand Design",
     subtitle: "Crafting Stunning and Delightful User Experiences",
@@ -40,6 +43,7 @@ const servicesDetailed = [
     color: "from-amber-400 to-orange-500",
   },
   {
+    id: "seo",
     category: "Marketing",
     title: "Digital Marketing & SEO",
     subtitle: "Organic Traffic Growth & Data-Driven Brand Authority",
@@ -86,14 +90,14 @@ export default function ServiceDetail() {
           ))}
         </div>
 
-        {/* Detailed Service Show */}
+                {/* Detailed Service Show */}
         {servicesDetailed
           .filter((item) => item.category === activeCat)
           .map((item) => (
-            <div key={item.title} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center animate-fadeIn">
+            <Link href={`/service/${item.id}`} key={item.title} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center animate-fadeIn cursor-pointer group/link block">
               {/* Card visual details left */}
               <div className="lg:col-span-5">
-                <div className={`relative p-10 rounded-3xl bg-gradient-to-br ${item.color} shadow-2xl overflow-hidden group`}>
+                <div className={`relative p-10 rounded-3xl bg-gradient-to-br ${item.color} shadow-2xl overflow-hidden group transition-all duration-300 hover:scale-[1.02] hover:shadow-${item.color.split('-')[1]}-500/20`}>
                   {/* Decorative mesh */}
                   <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
                   <div className="absolute inset-0 opacity-[0.08] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
@@ -103,7 +107,7 @@ export default function ServiceDetail() {
                       {item.icon}
                     </div>
 
-                    <h3 className="text-3xl font-extrabold tracking-tight mb-2">{item.title}</h3>
+                    <h3 className="text-3xl font-extrabold tracking-tight mb-2 group-link-hover:text-emerald-400 transition-colors">{item.title}</h3>
                     <p className="text-white/80 text-sm font-semibold mb-6">{item.subtitle}</p>
 
                     <div className="w-12 h-1 bg-white/20 rounded-full mb-6" />
@@ -124,8 +128,8 @@ export default function ServiceDetail() {
 
               {/* Text explanations right */}
               <div className="lg:col-span-7 flex flex-col justify-center">
-                <h4 className="text-sm font-bold tracking-widest text-emerald-400 uppercase mb-4">Service Details</h4>
-                <h2 className="text-4xl font-extrabold text-white mb-6 leading-tight">{item.title}</h2>
+                <h4 className="text-sm font-bold tracking-widest text-emerald-400 uppercase mb-4 group-hover/link:text-emerald-300 transition-colors">Service Details</h4>
+                <h2 className="text-4xl font-extrabold text-white mb-6 leading-tight group-hover/link:text-gray-200 transition-colors">{item.title}</h2>
                 <p className="text-gray-400 text-base md:text-lg leading-relaxed mb-8">{item.desc}</p>
 
                 <h5 className="text-white font-bold text-base mb-4 tracking-wide">Key Features & Deliverables:</h5>
@@ -142,7 +146,7 @@ export default function ServiceDetail() {
                   ))}
                 </ul>
               </div>
-            </div>
+            </Link>
           ))}
       </div>
       

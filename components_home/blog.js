@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const posts = [
   {
@@ -83,9 +84,9 @@ export default function Blog() {
           {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow">
             {visible.map((post) => (
-              <a
+              <Link
                 key={post.id}
-                href={post.href}
+                href={`/blog/${post.id}`}
                 className="group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30"
               >
                 {/* Image */}
@@ -113,7 +114,7 @@ export default function Blog() {
                     Post Details
                   </span>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
 

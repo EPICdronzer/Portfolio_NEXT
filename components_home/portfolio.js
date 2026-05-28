@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const projects = [
   {
@@ -83,9 +84,9 @@ export default function Portfolio() {
         {/* Project Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {visible.map((project) => (
-            <a
+            <Link
               key={project.id}
-              href={project.href}
+              href={`/portfolio/${project.id}`}
               className="group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40"
             >
               {/* Image */}
@@ -106,7 +107,7 @@ export default function Portfolio() {
                 </h3>
                 <p className="text-gray-500 text-sm">{project.category}</p>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
 

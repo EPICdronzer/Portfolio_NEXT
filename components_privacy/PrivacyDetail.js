@@ -54,7 +54,7 @@ export default function PrivacyDetail() {
           <div className="border-t border-white/10 pt-6">
             <h4 className="text-white font-bold text-sm mb-2">Inquiries & Opt-out</h4>
             <p className="text-xs text-gray-500">
-              For any privacy questions or data removal requests, please submit an email request to <span className="text-emerald-400">harshvashishth@example.com</span>.
+              For any privacy questions or data removal requests, please submit an email request to <span className="text-emerald-400">vharsh2003@gmail.com</span>.
             </p>
           </div>
         </div>

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const projectsDetailed = [
   {
@@ -87,12 +88,10 @@ export default function PortfolioDetail() {
         {/* Project Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProjects.map((project) => (
-            <a
+            <Link
               key={project.id}
-              href={project.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group block bg-[#111] border border-white/5 rounded-3xl overflow-hidden hover:border-emerald-500/30 hover:bg-[#151515] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-black/60"
+              href={`/portfolio/${project.id}`}
+              className="group block bg-[#111] border border-white/5 rounded-3xl overflow-hidden hover:border-emerald-500/30 hover:bg-[#151515] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-black/60 cursor-pointer"
             >
               {/* Image Frame */}
               <div className="relative h-64 w-full overflow-hidden">
@@ -120,13 +119,13 @@ export default function PortfolioDetail() {
                 </p>
 
                 <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider group-hover:underline">
-                  View Repository
+                  View Project
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
                 </div>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
 

@@ -42,7 +42,7 @@ export default function ContactDetail() {
               <div>
                 <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-1">Email Me</h4>
                 <p className="text-gray-400 text-sm hover:text-emerald-400 transition-colors">
-                  harshvashishth@example.com
+                  vharsh2003@gmail.com
                 </p>
               </div>
             </div>

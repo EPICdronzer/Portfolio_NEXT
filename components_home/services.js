@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 
 const servicesData = {
   Development: [
@@ -140,9 +141,10 @@ export default function Services() {
         {/* Service Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {servicesData[activeTab].map((service) => (
-            <div
+            <Link
+              href={`/service/${service.id}`}
               key={service.id}
-              className="group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-8 flex flex-col items-center text-center hover:border-amber-400/40 hover:bg-[#1e1e1e] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-400/5"
+              className="group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-8 flex flex-col items-center text-center hover:border-amber-400/40 hover:bg-[#1e1e1e] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-400/5 cursor-pointer block"
             >
               {/* Icon Circle */}
               <div className="w-16 h-16 rounded-full bg-zinc-800 group-hover:bg-amber-400/10 flex items-center justify-center mb-6 text-amber-400 transition-all duration-300">
@@ -152,16 +154,15 @@ export default function Services() {
               <h3 className="text-white font-bold text-lg mb-3">{service.title}</h3>
               <p className="text-gray-400 text-sm leading-relaxed mb-6">{service.desc}</p>
 
-              <a
-                href="#"
-                className="inline-flex items-center gap-2 text-gray-400 hover:text-amber-400 text-sm font-semibold transition-colors duration-200 group/link mt-auto"
+              <div
+                className="inline-flex items-center gap-2 text-gray-400 group-hover:text-amber-400 text-sm font-semibold transition-colors duration-200 mt-auto"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
                 Learn More
-              </a>
-            </div>
+              </div>
+            </Link>
           ))}
         </div>
       </div>

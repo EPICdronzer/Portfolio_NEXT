@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const blogsDetailed = [
   {
@@ -126,17 +127,15 @@ export default function BlogDetail() {
 
                 {/* Bottom link */}
                 <div>
-                  <a
-                    href={post.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href={`/blog/${post.id}`}
                     className="inline-flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider group-hover:underline"
                   >
                     Read Details
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </article>
