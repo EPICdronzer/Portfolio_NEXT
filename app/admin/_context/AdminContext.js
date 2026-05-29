@@ -43,10 +43,10 @@ export function AdminProvider({ children }) {
   const [editItem, setEditItem] = useState(null);
 
   // Form fields — each section has its own form state
-  const defaultFormService = { category: "Development", title: "", desc: "", iconName: "code", slug: "" };
+  const defaultFormService = { category: "Development", title: "", desc: "", iconName: "code", slug: "", images: [], imageMode: "replace" };
   const defaultFormExp = { startMonth: "", startYear: "", endMonth: "", endYear: "", role: "", company: "", companyExtra: "", href: "#" };
-  const defaultFormProj = { title: "", category: "", image: "/portfolio_screenshots.png", imgPos: "object-center", href: "#", slug: "" };
-  const defaultFormBlog = { title: "", date: "", image: "/blog_thumbnails.png", imgPos: "object-center", content: "", slug: "" };
+  const defaultFormProj = { title: "", category: "", desc: "", details: "", tech: "", images: [], imgPos: "object-center", href: "#", slug: "", imageMode: "replace" };
+  const defaultFormBlog = { title: "", date: "", category: "Development", author: "Harsh Vashishth", readTime: "4 min read", images: [], imgPos: "object-center", content: "", slug: "", imageMode: "replace" };
 
   const [formService, setFormService] = useState(defaultFormService);
   const [formExp, setFormExp] = useState(defaultFormExp);
@@ -203,10 +203,12 @@ export function AdminProvider({ children }) {
     if (type === "services") {
       setFormService({
         category: item.category || "Development",
-        title: item.title,
-        desc: item.desc,
+        title:    item.title,
+        desc:     item.desc,
         iconName: item.iconName || "code",
-        slug: item.slug || "",
+        slug:     item.slug    || "",
+        images:   item.images  || (item.image ? [item.image] : []),
+        imageMode: "replace",
       });
     }
     if (type === "experience") {
@@ -225,20 +227,28 @@ export function AdminProvider({ children }) {
       setFormProj({
         title:    item.title,
         category: item.category,
-        image:    item.image   || "/portfolio_screenshots.png",
-        imgPos:   item.imgPos  || "object-center",
-        href:     item.href    || "#",
-        slug:     item.slug    || "",
+        desc:     item.desc     || "",
+        details:  item.details  || "",
+        tech:     Array.isArray(item.tech) ? item.tech.join(", ") : (item.tech || ""),
+        images:   item.images   || (item.image && item.image !== "/portfolio_screenshots.png" ? [item.image] : []),
+        imgPos:   item.imgPos   || "object-center",
+        href:     item.href     || "#",
+        slug:     item.slug     || "",
+        imageMode: "replace",
       });
     }
     if (type === "blog") {
       setFormBlog({
-        title:   item.title,
-        date:    item.date,
-        image:   item.image   || "/blog_thumbnails.png",
-        imgPos:  item.imgPos  || "object-center",
-        content: item.content || "",
-        slug:    item.slug    || "",
+        title:    item.title,
+        date:     item.date,
+        category: item.category || "Development",
+        author:   item.author   || "Harsh Vashishth",
+        readTime: item.readTime || "4 min read",
+        images:   item.images   || (item.image && item.image !== "/blog_thumbnails.png" ? [item.image] : []),
+        imgPos:   item.imgPos   || "object-center",
+        content:  item.content  || "",
+        slug:     item.slug     || "",
+        imageMode: "replace",
       });
     }
     setIsModalOpen(true);

@@ -4,60 +4,36 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const projectsDetailed = [
-  {
-    id: "proj-1",
-    title: "DesiCart - Saree & Ethnic Wear E-commerce",
-    category: "E-commerce . UI Design",
-    desc: "A high-conversion fashion e-commerce storefront tailored for Indian ethnic wear with UPI integrated checkouts.",
-    image: "/portfolio_screenshots.png",
-    aspectRatio: "16/9",
-  },
-  {
-    id: "proj-2",
-    title: "PayBharat - UPI Payment Dashboard",
-    category: "FinTech . Web App",
-    desc: "A comprehensive analytics UI kit for local businesses to track UPI transactions and settlements in real-time.",
-    image: "/portfolio_screenshots.png",
-    aspectRatio: "3/4",
-  },
-  {
-    id: "proj-3",
-    title: "Mumbai Metro Transit App Concept",
-    category: "UI/UX Design . Mobile",
-    desc: "A conceptual redesign of the Mumbai Metro navigation app featuring Marathi localization and quick ticket booking.",
-    image: "/portfolio_screenshots.png",
-    aspectRatio: "4/5",
-  },
-  {
-    id: "proj-4",
-    title: "Namaste - Indian Social Network",
-    category: "Branding . Web Design",
-    desc: "A vibrant, localized social platform focusing on regional languages and community building across Tier-2 and Tier-3 cities.",
-    image: "/portfolio_screenshots.png",
-    aspectRatio: "1/1",
-  },
-  {
-    id: "proj-5",
-    title: "Swad - Food Delivery UI Kit",
-    category: "Mobile . Art Direction",
-    desc: "A premium, award-winning food delivery app concept with custom animations tailored for the busy streets of Delhi.",
-    image: "/portfolio_screenshots.png",
-    aspectRatio: "16/10",
-  },
-];
+const ITEMS_PER_PAGE = 6;
 
-const ITEMS_PER_PAGE = 4;
+export default function PortfolioDetail({ initialPortfolios }) {
+  const hasData = initialPortfolios && initialPortfolios.length > 0;
 
-export default function PortfolioDetail() {
-  const [activeFilter, setActiveFilter] = useState("All Product");
-  const [tappedCard, setTappedCard] = useState(null);
+  const displayProjects = hasData
+    ? initialPortfolios.map((item) => ({
+        id: item.slug || item._id,
+        title: item.title,
+        category: item.category || "Project",
+        desc: item.desc || `${item.title} — a premium, thoughtfully crafted project.`,
+        image: item.image || "/portfolio_screenshots.png",
+        imgPos: item.imgPos || "object-center",
+        href: item.href || "#",
+      }))
+    : [];
+
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [expandedId, setExpandedId] = useState(null); // accordion on mobile
+  const [tappedCard, setTappedCard] = useState(null);  // overlay reveal on desktop
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const categories = ["All Product", "Branding", "UI/UX Design", "E-commerce", "FinTech"];
 
-  const filteredProjects = projectsDetailed.filter((p) => {
-    const matchesFilter = activeFilter === "All Product" || p.category.includes(activeFilter);
+  /* Build category list dynamically from data */
+  const dynamicCats = hasData
+    ? ["All", ...Array.from(new Set(displayProjects.map((p) => p.category.split(/[.·,]/)[0].trim())))]
+    : ["All"];
+
+  const filteredProjects = displayProjects.filter((p) => {
+    const matchesFilter = activeFilter === "All" || p.category.toLowerCase().includes(activeFilter.toLowerCase());
     const matchesSearch =
       p.title.toLowerCase().includes(search.toLowerCase()) ||
       p.category.toLowerCase().includes(search.toLowerCase());
@@ -67,26 +43,50 @@ export default function PortfolioDetail() {
   const totalPages = Math.ceil(filteredProjects.length / ITEMS_PER_PAGE);
   const paginated = filteredProjects.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
-  const handleFilterChange = (cat) => {
-    setActiveFilter(cat);
-    setPage(1);
-  };
+  const handleFilterChange = (cat) => { setActiveFilter(cat); setPage(1); setExpandedId(null); };
+  const handleSearch = (e) => { setSearch(e.target.value); setPage(1); setExpandedId(null); };
 
-  const handleSearch = (e) => {
-    setSearch(e.target.value);
-    setPage(1);
-  };
+  /* ───────── No Data UI ───────── */
+  if (!hasData) {
+    return (
+      <section className="bg-[#1c1c1c] py-20 md:py-28 relative overflow-hidden min-h-screen flex items-center">
+        <div className="max-w-6xl mx-auto px-6 w-full">
+          <div className="w-full max-w-2xl mx-auto my-12 text-center p-12 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-md shadow-2xl relative overflow-hidden group hover:border-emerald-500/20 transition-all duration-500">
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-extrabold text-white mb-3 tracking-tight">No Portfolio Projects Yet</h3>
+              <p className="text-gray-400 text-sm max-w-md mx-auto leading-relaxed mb-6 font-light">
+                Projects will appear here once added through the administrator dashboard. Check back soon!
+              </p>
+              <a
+                href="#contact"
+                className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs px-6 py-3 rounded-full transition-all duration-300 shadow-lg"
+              >
+                Get in Touch
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
-  const handleCardTap = (id) => {
-    setTappedCard((prev) => (prev === id ? null : id));
-  };
-
+  /* ───────── Main Grid ───────── */
   return (
     <section className="bg-[#1c1c1c] py-20 md:py-28 relative overflow-hidden min-h-screen">
-      <div className="max-w-6xl mx-auto px-6 md:px-12 relative z-10">
-        
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 relative z-10">
+
         {/* ── Search Bar ── */}
-        <div className="mb-8 flex items-center gap-3 bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3 focus-within:border-emerald-500/50 transition-colors duration-300">
+        <div className="mb-6 flex items-center gap-3 bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3 focus-within:border-emerald-500/50 transition-colors duration-300">
           <svg className="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -102,16 +102,16 @@ export default function PortfolioDetail() {
           )}
         </div>
 
-        {/* Category Filters */}
-        <div className="flex justify-center gap-6 mb-12 flex-wrap">
-          {categories.map((cat) => (
+        {/* ── Category Filters ── */}
+        <div className="flex justify-center gap-4 mb-10 flex-wrap">
+          {dynamicCats.map((cat) => (
             <button
               key={cat}
               onClick={() => handleFilterChange(cat)}
-              className={`text-sm font-bold tracking-wider transition-colors duration-300 ${
+              className={`text-xs font-bold tracking-wider uppercase px-4 py-2 rounded-full transition-all duration-300 border ${
                 activeFilter === cat
-                  ? "text-emerald-400"
-                  : "text-gray-300 hover:text-white"
+                  ? "bg-emerald-500 text-black border-emerald-500 shadow-lg shadow-emerald-500/25"
+                  : "border-white/10 text-gray-400 hover:text-white hover:border-white/30"
               }`}
             >
               {cat}
@@ -119,77 +119,156 @@ export default function PortfolioDetail() {
           ))}
         </div>
 
-        {/* Masonry Project Grid */}
+        {/* ── Empty search result ── */}
         {filteredProjects.length === 0 && (
-          <div className="text-center py-20 text-gray-500">No projects found matching &ldquo;{search}&rdquo;</div>
+          <div className="text-center py-20 text-gray-500">
+            No projects found matching &ldquo;{search}&rdquo;
+          </div>
         )}
-        <div className="columns-1 md:columns-2 gap-8 space-y-8">
-          {filteredProjects.map((project) => {
+
+        {/* ══════════════════════════════════════════
+            MOBILE: Accordion expand-on-tap cards
+            DESKTOP: Masonry grid with overlay reveal
+        ══════════════════════════════════════════ */}
+
+        {/* ── MOBILE accordion list (hidden on md+) ── */}
+        <div className="flex flex-col gap-4 md:hidden">
+          {paginated.map((project) => {
+            const isOpen = expandedId === project.id;
+            return (
+              <div
+                key={project.id}
+                className="rounded-2xl overflow-hidden border border-white/5 bg-[#141414] transition-all duration-500"
+              >
+                {/* Compact header row — always visible */}
+                <button
+                  onClick={() => setExpandedId(isOpen ? null : project.id)}
+                  className="w-full flex items-center gap-4 p-4 text-left group"
+                  aria-expanded={isOpen}
+                >
+                  {/* Thumbnail */}
+                  <div className="relative flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-white/10">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      sizes="64px"
+                      className={`object-cover ${project.imgPos} transition-transform duration-500 group-hover:scale-110`}
+                    />
+                  </div>
+
+                  {/* Title + category */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-0.5 truncate">
+                      {project.category}
+                    </p>
+                    <h3 className="text-sm font-bold text-white leading-snug line-clamp-2">
+                      {project.title}
+                    </h3>
+                  </div>
+
+                  {/* Chevron */}
+                  <svg
+                    className={`w-4 h-4 text-gray-400 flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 text-emerald-400" : ""}`}
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {/* Expanded content */}
+                <div
+                  className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                    isOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <div className="px-4 pb-5 space-y-4">
+                    {/* Full-size image */}
+                    <div className="relative w-full h-52 rounded-2xl overflow-hidden border border-white/5">
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw"
+                        className={`object-cover ${project.imgPos}`}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-sm text-gray-400 leading-relaxed">{project.desc}</p>
+
+                    {/* CTA */}
+                    <Link
+                      href={`/portfolio/${project.id}`}
+                      className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs px-5 py-2.5 rounded-full shadow-lg shadow-emerald-500/20 transition-all duration-300"
+                    >
+                      View Project
+                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── DESKTOP Masonry grid (hidden below md) ── */}
+        <div className="hidden md:block columns-2 lg:columns-3 gap-6 space-y-6">
+          {paginated.map((project) => {
             const isActive = tappedCard === project.id;
             return (
               <div
                 key={project.id}
-                onClick={() => handleCardTap(project.id)}
-                className="group relative block break-inside-avoid cursor-pointer overflow-hidden"
-                style={{ aspectRatio: project.aspectRatio }}
+                onClick={() => setTappedCard((prev) => (prev === project.id ? null : project.id))}
+                className="group relative block break-inside-avoid cursor-pointer overflow-hidden rounded-2xl border border-white/5"
+                style={{ aspectRatio: "4/3" }}
               >
                 {/* Image */}
                 <Image
                   src={project.image}
                   alt={project.title}
                   fill
+                  sizes="(max-width: 1024px) 50vw, 33vw"
                   className={`object-cover opacity-90 transition-all duration-700 ease-out ${
-                    isActive
-                      ? "scale-110 grayscale-0"
-                      : "grayscale group-hover:scale-110 group-hover:grayscale-0"
-                  }`}
+                    isActive ? "scale-110 grayscale-0" : "grayscale group-hover:scale-110 group-hover:grayscale-0"
+                  } ${project.imgPos}`}
                 />
 
-                {/* Dark gradient base — always visible, subtle */}
+                {/* Subtle base gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 
-                {/* Overlay — slides up from bottom on hover (desktop) OR on tap (mobile) */}
+                {/* Hover / tap overlay */}
                 <div
                   className={`absolute inset-0 flex flex-col justify-end p-6 transition-transform duration-500 ease-out bg-gradient-to-t from-black/90 via-black/50 to-transparent ${
-                    isActive
-                      ? "translate-y-0"
-                      : "translate-y-full group-hover:translate-y-0"
+                    isActive ? "translate-y-0" : "translate-y-full group-hover:translate-y-0"
                   }`}
                 >
-                  {/* Tap-dismiss hint on mobile */}
                   {isActive && (
                     <button
                       onClick={(e) => { e.stopPropagation(); setTappedCard(null); }}
-                      className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center text-white text-xs md:hidden"
+                      className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center text-white text-xs"
                       aria-label="Close"
                     >✕</button>
                   )}
 
-                  {/* Category pill */}
-                  <span className="inline-block text-sm font-bold tracking-[0.2em] uppercase text-emerald-400 mb-2">
+                  <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase text-emerald-400 mb-2">
                     {project.category}
                   </span>
-
-                  {/* Title */}
-                  <h3 className="text-white font-extrabold text-lg leading-snug mb-4 tracking-tight">
+                  <h3 className="text-white font-extrabold text-base leading-snug mb-3 tracking-tight">
                     {project.title}
                   </h3>
+                  <p className="text-gray-300 text-xs leading-relaxed mb-4 line-clamp-2">{project.desc}</p>
 
-                  {/* Read More button — stops propagation so click doesn't toggle off */}
                   <Link
                     href={`/portfolio/${project.id}`}
                     onClick={(e) => e.stopPropagation()}
                     className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs px-5 py-2.5 rounded-full shadow-lg shadow-emerald-500/30 transition-all duration-300 w-fit group/btn"
                   >
-                    Read More
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-3.5 w-3.5 transform group-hover/btn:translate-x-1 transition-transform duration-200"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                    >
+                    View Project
+                    <svg className="h-3.5 w-3.5 group-hover/btn:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                   </Link>
@@ -207,7 +286,9 @@ export default function PortfolioDetail() {
               disabled={page === 1}
               className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
             </button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
               <button
@@ -225,12 +306,17 @@ export default function PortfolioDetail() {
               disabled={page === totalPages}
               className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
             </button>
           </div>
         )}
+
         {search && filteredProjects && (
-          <p className="text-center text-gray-600 text-xs mt-6">{filteredProjects.length} result{filteredProjects.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;</p>
+          <p className="text-center text-gray-600 text-xs mt-6">
+            {filteredProjects.length} result{filteredProjects.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;
+          </p>
         )}
       </div>
     </section>

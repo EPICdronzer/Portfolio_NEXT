@@ -1,16 +1,19 @@
 import mongoose from "mongoose";
 
 const BlogSchema = new mongoose.Schema({
-  // Unique slug used in href="/blog/[id]"
-  slug:    { type: String, required: true, unique: true },
-  title:   { type: String, required: true },
-  // Date displayed on the card, e.g. "January 02, 2025"
-  date:    { type: String, required: true },
-  // Cloudinary image URL
+  slug:     { type: String, required: true, unique: true },
+  title:    { type: String, required: true },
+  date:     { type: String, default: "" },
+  category: { type: String, default: "Development" },
+  author:   { type: String, default: "Harsh Vashishth" },
+  readTime: { type: String, default: "4 min read" },
+
+  // Primary banner image (backward compat)
   image:   { type: String, default: "/blog_thumbnails.png" },
-  // Image position for CSS object-position
   imgPos:  { type: String, default: "object-center" },
-  // Full blog content (Markdown or plain text)
+  // Additional inline images
+  images:  [{ type: String }],
+
   content: { type: String, default: "" },
   order:   { type: Number, default: 0 },
 }, { timestamps: true });

@@ -1,14 +1,12 @@
 export const siteConfig = {
   email: process.env.NEXT_PUBLIC_SITE_EMAIL || "vharsh2003@gmail.com",
-  phone: process.env.NEXT_PUBLIC_SITE_PHONE || "+91 98765 43210",
-  whatsapp: process.env.NEXT_PUBLIC_SITE_WHATSAPP || "+91 98765 43210",
+  phone: process.env.NEXT_PUBLIC_SITE_PHONE || "+91 8383933578",
+  whatsapp: process.env.NEXT_PUBLIC_SITE_WHATSAPP || "+91 8383933578",
   location: process.env.NEXT_PUBLIC_SITE_LOCATION || "Delhi, India",
   socialLinks: {
     facebook: process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK || "#",
-    twitter: process.env.NEXT_PUBLIC_SOCIAL_TWITTER || "#",
     linkedin: process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN || "#",
     pinterest: process.env.NEXT_PUBLIC_SOCIAL_PINTEREST || "#",
-    vk: process.env.NEXT_PUBLIC_SOCIAL_VK || "#",
     github: process.env.NEXT_PUBLIC_SOCIAL_GITHUB || "https://github.com/EPICdronzer",
   },
   cloudinary: {

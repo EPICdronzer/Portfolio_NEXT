@@ -63,13 +63,73 @@ const servicesDetailed = [
   },
 ];
 
-export default function ServiceDetail() {
+const getServiceIcon = (name) => {
+  switch (name) {
+    case "phone":
+    case "app":
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18h3" />
+        </svg>
+      );
+    case "software":
+    case "code":
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
+        </svg>
+      );
+    case "design":
+    case "ui":
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
+        </svg>
+      );
+    case "brand":
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
+        </svg>
+      );
+    case "seo":
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+      );
+    default:
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+        </svg>
+      );
+  }
+};
+
+export default function ServiceDetail({ initialServices }) {
+  const hasData = initialServices && initialServices.length > 0;
   const [activeCat, setActiveCat] = useState("Development");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const SERVICES_PER_PAGE = 3;
 
-  const filtered = servicesDetailed.filter((item) => {
+  const displayData = hasData
+    ? initialServices.map((item) => ({
+        id: item.slug || item._id,
+        category: item.category || "Development",
+        title: item.title,
+        subtitle: item.title + " Solutions",
+        desc: item.desc,
+        tech: item.category === "Development" ? ["React", "Next.js", "Node.js", "MongoDB"] : (item.category === "Design" ? ["Figma", "UI/UX", "Branding"] : ["SEO", "AdWords", "Analytics"]),
+        features: [item.desc],
+        icon: getServiceIcon(item.iconName || "code"),
+        color: item.category === "Development" ? "from-emerald-500 to-teal-600" : (item.category === "Design" ? "from-amber-400 to-orange-500" : "from-indigo-500 to-purple-600"),
+      }))
+    : [];
+
+  const filtered = displayData.filter((item) => {
     const matchesCat = item.category === activeCat;
     const q = search.toLowerCase();
     const matchesSearch =
@@ -90,6 +150,29 @@ export default function ServiceDetail() {
       <div className="absolute bottom-0 left-[-10%] w-[45%] h-[50%] rounded-full bg-indigo-500/5 blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 relative z-10">
+
+        {/* ── NO DATA UI ── */}
+        {!hasData ? (
+          <div className="w-full max-w-2xl mx-auto my-12 text-center p-12 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-md shadow-2xl relative overflow-hidden group hover:border-emerald-500/20 transition-all duration-500">
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-extrabold text-white mb-3 tracking-tight">No Services Added Yet</h3>
+              <p className="text-gray-400 text-sm max-w-md mx-auto leading-relaxed mb-6 font-light">
+                Services will appear here once added through the administrator dashboard. Check back soon or get in touch directly!
+              </p>
+              <a href="#contact" className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs px-6 py-3 rounded-full transition-all duration-300 shadow-lg">
+                Get in Touch
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+              </a>
+            </div>
+          </div>
+        ) : (
+          <>
         {/* Search Bar */}
         <div className="mb-8 flex items-center gap-3 bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3 focus-within:border-emerald-500/50 transition-colors duration-300">
           <svg className="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,7 +207,6 @@ export default function ServiceDetail() {
           ))}
         </div>
 
-                {/* No results */}
         {filtered.length === 0 && (
           <p className="text-center py-16 text-gray-500">No services found for &ldquo;{search}&rdquo;</p>
         )}
@@ -212,6 +294,8 @@ export default function ServiceDetail() {
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
             </button>
           </div>
+        )}
+          </>
         )}
       </div>
       

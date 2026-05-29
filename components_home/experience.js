@@ -67,9 +67,8 @@ const CompanyIcon = ({ index }) => {
 };
 
 export default function Experience({ initialExperiences }) {
-  const displayExperiences = (initialExperiences && initialExperiences.length > 0)
-    ? initialExperiences
-    : experiences;
+  const hasData = initialExperiences && initialExperiences.length > 0;
+  const displayExperiences = hasData ? initialExperiences : [];
 
   return (
     <section id="about" className="bg-[#0f0f0f] py-24 px-6 md:px-12 lg:px-24">
@@ -85,90 +84,113 @@ export default function Experience({ initialExperiences }) {
           </p>
         </div>
 
-        {/* Experience Cards — Swipeable on mobile, grid on desktop */}
-        {/* Mobile horizontal scroll */}
-        <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-6 px-6 snap-x snap-mandatory scrollbar-hide">
-          {displayExperiences.map((exp, index) => (
-            <div
-              key={exp._id || exp.id}
-              className="snap-start flex-shrink-0 w-[75vw] max-w-[300px] group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 flex flex-col items-center text-center hover:border-zinc-600 transition-all duration-300"
-            >
-              {/* Company Logo Icon */}
-              <div className="mb-5">
-                <CompanyIcon index={index % 3} />
-              </div>
-
-              {/* Period */}
-              <p className="text-white font-extrabold text-2xl mb-2 tracking-tight">
-                {exp.period || `${exp.startMonth} ${exp.startYear} - ${exp.endMonth || 'Present'} ${exp.endYear || ''}`}
-              </p>
-
-              {/* Role */}
-              <h3 className="text-white font-bold text-base mb-2">{exp.role}</h3>
-
-              {/* Company */}
-              <p className={`${exp.companyColor || "text-emerald-400"} text-sm font-medium mb-1`}>
-                {exp.company}
-                {exp.companyExtra && (
-                  <span className="text-gray-500 font-normal"> {exp.companyExtra}</span>
-                )}
-              </p>
-
-              {/* Link */}
-              <a
-                href={exp.href || "#"}
-                className="inline-flex items-center gap-2 text-gray-500 hover:text-white text-sm font-semibold transition-colors duration-200 mt-5 group/link"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover/link:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+        {!hasData ? (
+          <div className="w-full max-w-2xl mx-auto my-12 text-center p-12 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-md shadow-2xl relative overflow-hidden group hover:border-emerald-500/20 transition-all duration-500 animate-fadeIn">
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-700 pointer-events-none" />
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                Go to website
+              </div>
+              <h3 className="text-2xl font-extrabold text-white mb-3 tracking-tight">No Work Experience Added Yet</h3>
+              <p className="text-gray-400 text-sm max-w-md mx-auto leading-relaxed mb-6 font-light">
+                Our administrator hasn't added any work experiences in the backend yet. Please check back later or get in touch directly!
+              </p>
+              <a href="#contact" className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs px-6 py-3 rounded-full transition-all duration-300 shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/25">
+                Get in Touch
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
               </a>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <>
+            {/* Mobile horizontal scroll */}
+            <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-6 px-6 snap-x snap-mandatory scrollbar-hide">
+              {displayExperiences.map((exp, index) => (
+                <div
+                  key={exp._id || exp.id}
+                  className="snap-start flex-shrink-0 w-[75vw] max-w-[300px] group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 flex flex-col items-center text-center hover:border-zinc-600 transition-all duration-300"
+                >
+                  {/* Company Logo Icon */}
+                  <div className="mb-5">
+                    <CompanyIcon index={index % 3} />
+                  </div>
 
-        {/* Desktop grid */}
-        <div className="hidden md:grid grid-cols-3 gap-6">
-          {displayExperiences.map((exp, index) => (
-            <div
-              key={exp._id || exp.id}
-              className="group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-8 flex flex-col items-center text-center hover:border-zinc-600 hover:bg-[#1e1e1e] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30"
-            >
-              {/* Company Logo Icon */}
-              <div className="mb-5">
-                <CompanyIcon index={index % 3} />
-              </div>
+                  {/* Period */}
+                  <p className="text-white font-extrabold text-2xl mb-2 tracking-tight">
+                    {exp.period || `${exp.startMonth} ${exp.startYear} - ${exp.endMonth || 'Present'} ${exp.endYear || ''}`}
+                  </p>
 
-              {/* Period */}
-              <p className="text-white font-extrabold text-2xl mb-2 tracking-tight">
-                {exp.period || `${exp.startMonth} ${exp.startYear} - ${exp.endMonth || 'Present'} ${exp.endYear || ''}`}
-              </p>
+                  {/* Role */}
+                  <h3 className="text-white font-bold text-base mb-2">{exp.role}</h3>
 
-              {/* Role */}
-              <h3 className="text-white font-bold text-base mb-2">{exp.role}</h3>
+                  {/* Company */}
+                  <p className={`${exp.companyColor || "text-emerald-400"} text-sm font-medium mb-1`}>
+                    {exp.company}
+                    {exp.companyExtra && (
+                      <span className="text-gray-500 font-normal"> {exp.companyExtra}</span>
+                    )}
+                  </p>
 
-              {/* Company */}
-              <p className={`${exp.companyColor || "text-emerald-400"} text-sm font-medium mb-1`}>
-                {exp.company}
-                {exp.companyExtra && (
-                  <span className="text-gray-500 font-normal"> {exp.companyExtra}</span>
-                )}
-              </p>
-
-              {/* Link */}
-              <a
-                href={exp.href || "#"}
-                className="inline-flex items-center gap-2 text-gray-500 hover:text-white text-sm font-semibold transition-colors duration-200 mt-5 group/link"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover/link:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-                Go to website
-              </a>
+                  {/* Link */}
+                  <a
+                    href={exp.href || "#"}
+                    className="inline-flex items-center gap-2 text-gray-500 hover:text-white text-sm font-semibold transition-colors duration-200 mt-5 group/link"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover/link:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                    Go to website
+                  </a>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+
+            {/* Desktop grid */}
+            <div className="hidden md:grid grid-cols-3 gap-6">
+              {displayExperiences.map((exp, index) => (
+                <div
+                  key={exp._id || exp.id}
+                  className="group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-8 flex flex-col items-center text-center hover:border-zinc-600 hover:bg-[#1e1e1e] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30"
+                >
+                  {/* Company Logo Icon */}
+                  <div className="mb-5">
+                    <CompanyIcon index={index % 3} />
+                  </div>
+
+                  {/* Period */}
+                  <p className="text-white font-extrabold text-2xl mb-2 tracking-tight">
+                    {exp.period || `${exp.startMonth} ${exp.startYear} - ${exp.endMonth || 'Present'} ${exp.endYear || ''}`}
+                  </p>
+
+                  {/* Role */}
+                  <h3 className="text-white font-bold text-base mb-2">{exp.role}</h3>
+
+                  {/* Company */}
+                  <p className={`${exp.companyColor || "text-emerald-400"} text-sm font-medium mb-1`}>
+                    {exp.company}
+                    {exp.companyExtra && (
+                      <span className="text-gray-500 font-normal"> {exp.companyExtra}</span>
+                    )}
+                  </p>
+
+                  {/* Link */}
+                  <a
+                    href={exp.href || "#"}
+                    className="inline-flex items-center gap-2 text-gray-500 hover:text-white text-sm font-semibold transition-colors duration-200 mt-5 group/link"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover/link:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                    Go to website
+                  </a>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
       </div>
     </section>
   );

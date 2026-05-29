@@ -3,67 +3,25 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
-const allServicesList = [
-  { name: "Web Development", id: "web-dev", count: 5 },
-  { name: "App Development", id: "app-dev", count: 7 },
-  { name: "Software Development", id: "software-dev", count: 3 },
-  { name: "Social Media Marketing", id: "social-media", count: 8 },
-  { name: "Graphic Design", id: "graphic-design", count: 6 },
-  { name: "Brand Identity", id: "brand-identity", count: 2 },
+/* ─── Fallback sidebar services (shown when DB has none) ─── */
+const FALLBACK_SERVICES = [
+  { name: "Web Development",       id: "web-dev" },
+  { name: "App Development",       id: "app-dev" },
+  { name: "Software Development",  id: "software-dev" },
+  { name: "Social Media Marketing",id: "social-media" },
+  { name: "Graphic Design",        id: "graphic-design" },
+  { name: "Brand Identity",        id: "brand-identity" },
 ];
 
-const blogPostsData = {
-  "post-1": {
-    title: "How Next.js App Router Evolves Full-Stack Development Systems",
-    date: "January 02, 2026",
-    readTime: "5 min read",
-    category: "Next.js",
-    author: "Harsh Vashishth",
-    content: [
-      "The web development landscape has transformed dramatically since the introduction of Server Components. With Next.js leading the way, developers are now able to leverage server-side logic and hybrid page rendering structures right inside standard React configurations.",
-      "By moving heavy queries directly into async Server Components, we eliminate unnecessary REST layers and API overheads. Client bundles are drastically optimized since the parsing code stays entirely on the server side.",
-      "Furthermore, the new Next.js partial pre-rendering (PPR) pipelines allow static sections to load instantly while dynamic modules stream asynchronously. It marks a massive leap forward in both user performance scores and total search rank optimizations.",
-    ],
-  },
-  "post-2": {
-    title: "Mastering Tailwind CSS 4.0 Theme Variables for Dark Mode",
-    date: "January 03, 2026",
-    readTime: "4 min read",
-    category: "CSS / Design",
-    author: "Harsh Vashishth",
-    content: [
-      "Tailwind CSS v4.0 introduces native CSS variable engine integration. Instead of massive config objects, styling systems are declared directly in modern CSS themes using simple standard variables.",
-      "This architecture enables dynamic HSL customization on client machines. You can shift branding colors or responsive grid schemes instantly without triggering complex rebuild processes.",
-      "Adding custom micro-interactions like floating icons or glassmorphic cards is now incredibly seamless, granting web portfolios premium aesthetics that immediately charm daily visitors.",
-    ],
-  },
-};
-
-const defaultBlogFallback = (title) => ({
-  title: title || "Blog Details",
-  date: "May 28, 2026",
-  readTime: "4 min read",
-  category: "Development",
-  author: "Harsh Vashishth",
-  content: [
-    "Exploring modern technologies allows us to solve complex challenges with clean solutions. Standard design structures combined with efficient backend systems grant businesses ultimate load speed capabilities.",
-    "By writing test-driven code, implementing secure data indexes, and structuring modular functions, we ensure code stays maintainable through multiple growth phases.",
-    "Stay tuned to this section as we continue to post details regarding cloud hosting, API design paradigms, and responsive design solutions.",
-  ],
-});
-
-export default function SingleBlogDetail({ postId }) {
-  const [formData, setFormData] = useState({ name: "", email: "", comment: "" });
+export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
+  const [formData, setFormData]   = useState({ name: "", email: "", comment: "" });
   const [submitted, setSubmitted] = useState(false);
 
-  const formatTitle = (id) => {
-    return id
-      .split("-")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" ");
-  };
-
-  const currentPost = blogPostsData[postId] || defaultBlogFallback(formatTitle(postId));
+  /* ── Sidebar services ── */
+  const sidebarServices =
+    initialAllServices && initialAllServices.length > 0
+      ? initialAllServices.map((s) => ({ name: s.title, id: s.slug || s._id }))
+      : FALLBACK_SERVICES;
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
@@ -72,60 +30,115 @@ export default function SingleBlogDetail({ postId }) {
     setTimeout(() => setSubmitted(false), 4500);
   };
 
+  /* ═══════════════════════════════════════
+      NO DATA / POST NOT FOUND UI
+  ═══════════════════════════════════════ */
+  if (!initialBlog) {
+    return (
+      <section className="bg-[#111111] text-[#dddddd] py-20 px-6 md:px-12 lg:px-24 min-h-[60vh] flex items-center justify-center">
+        <div className="text-center max-w-lg">
+          <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-8">
+            <svg className="w-9 h-9 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-extrabold text-white mb-4 tracking-tight">Post Not Found</h1>
+          <p className="text-gray-400 leading-relaxed mb-8">
+            This blog article hasn&apos;t been published to the database yet, or the link may be incorrect. Head back to browse all available articles.
+          </p>
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-6 py-3 rounded-full transition-all duration-300 shadow-lg shadow-emerald-500/20"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Blog
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
+  /* ═══════════════════════════════════════
+      NORMALISE FIELDS FROM MONGODB DOC
+  ═══════════════════════════════════════ */
+  const title    = initialBlog.title   || "Untitled Post";
+  const date     = initialBlog.date    || new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "2-digit" });
+  const image    = initialBlog.image   || "/my.png";
+  const category = initialBlog.category|| "Development";
+  const author   = initialBlog.author  || "Harsh Vashishth";
+  const readTime = initialBlog.readTime|| "4 min read";
+
+  /* content can be a string (rich text) or array of paragraphs */
+  const paragraphs = Array.isArray(initialBlog.content)
+    ? initialBlog.content
+    : typeof initialBlog.content === "string" && initialBlog.content.trim()
+      ? initialBlog.content.split(/\n{2,}/).filter(Boolean)
+      : [
+          "This article explores modern development practices and engineering principles.",
+          "Stay tuned as the full content is published through the administrator dashboard.",
+        ];
+
+  /* ═══════════════════════════════════════
+      FULL BLOG POST UI
+  ═══════════════════════════════════════ */
   return (
     <section className="bg-[#111111] text-[#dddddd] py-16 px-6 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          
-          {/* ── LEFT: Main Content (8 Cols) ── */}
+
+          {/* ── LEFT: Main Content (8 cols) ── */}
           <div className="lg:col-span-8 space-y-10">
-            {/* Banner picture */}
+
+            {/* Banner image */}
             <div className="relative w-full h-[320px] sm:h-[420px] rounded-3xl overflow-hidden border border-white/5">
               <img
-                src="/my.png"
-                alt={currentPost.title}
+                src={image}
+                alt={title}
                 className="w-full h-full object-cover"
               />
             </div>
 
-            {/* Meta Tags */}
+            {/* Meta tags */}
             <div className="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
               <span className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-full">
-                📅 {currentPost.date}
+                📅 {date}
               </span>
               <span className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-full">
-                ⏱️ {currentPost.readTime}
+                ⏱️ {readTime}
               </span>
               <span className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-full text-emerald-400">
-                🏷️ {currentPost.category}
+                🏷️ {category}
               </span>
-              <span>By {currentPost.author}</span>
+              <span>By {author}</span>
             </div>
 
-            {/* Title & Blog Paragraphs */}
+            {/* Title & paragraphs */}
             <div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-6 tracking-tight leading-snug">
-                {currentPost.title}
-              </h2>
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-6 tracking-tight leading-snug">
+                {title}
+              </h1>
               <div className="space-y-6 text-[#a0a0a0] text-base leading-relaxed font-light">
-                {currentPost.content.map((p, idx) => (
+                {paragraphs.map((p, idx) => (
                   <p key={idx}>{p}</p>
                 ))}
               </div>
             </div>
 
-            {/* Code Block Snippet (Highly Technical & Authentic) */}
+            {/* Code snippet block */}
             <div className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 font-mono text-xs overflow-x-auto text-emerald-400">
               <span className="text-gray-500">// Example next.js Server Component</span><br />
               <span className="text-purple-400">export async function</span> <span className="text-blue-400">generateMetadata</span>({`{ params }`}) &#123;<br />
               &nbsp;&nbsp;<span className="text-purple-400">const</span> id = <span className="text-purple-400">await</span> params.id;<br />
-              &nbsp;&nbsp;<span className="text-purple-400">return</span> &#123; title: <span className="text-amber-300">`$&#123;id&#125; - Creative Blog`</span> &#125;;<br />
+              &nbsp;&nbsp;<span className="text-purple-400">return</span> &#123; title: <span className="text-amber-300">{"`${id} - Creative Blog`"}</span> &#125;;<br />
               &#125;
             </div>
 
-            {/* Leave a Comment form */}
+            {/* Comment form */}
             <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 shadow-xl mt-6 relative">
-              <h3 className="text-2xl font-extrabold text-white mb-2">Leave a Comment</h3>
+              <h2 className="text-2xl font-extrabold text-white mb-2">Leave a Comment</h2>
               <p className="text-[#a0a0a0] text-sm mb-6 font-light">
                 Your email address will not be published. Required fields are marked *
               </p>
@@ -173,8 +186,9 @@ export default function SingleBlogDetail({ postId }) {
             </div>
           </div>
 
-          {/* ── RIGHT: Sidebar (4 Cols) ── */}
+          {/* ── RIGHT: Sidebar (4 cols) ── */}
           <aside className="lg:col-span-4 space-y-8">
+
             {/* Search widget */}
             <div className="bg-[#181818] border border-white/5 rounded-2xl p-6">
               <div className="flex gap-2">
@@ -191,23 +205,23 @@ export default function SingleBlogDetail({ postId }) {
               </div>
             </div>
 
-            {/* Services List widget */}
+            {/* Services list widget — dynamic from DB */}
             <div className="bg-[#181818] border border-white/5 rounded-2xl p-6">
               <h4 className="text-white font-bold text-sm tracking-wider uppercase mb-5 relative pb-3">
                 Services
                 <span className="absolute bottom-0 left-0 w-8 h-[2px] bg-emerald-500" />
               </h4>
               <ul className="space-y-3">
-                {allServicesList.map((srv) => (
+                {sidebarServices.map((srv) => (
                   <li key={srv.id}>
                     <Link
                       href={`/service/${srv.id}`}
                       className="flex items-center justify-between text-xs font-semibold py-3 border-b border-zinc-800 last:border-0 hover:text-emerald-400 transition-colors text-[#b0b0b0]"
                     >
                       <span>{srv.name}</span>
-                      <span className="w-6 h-6 rounded-full bg-zinc-900 border border-zinc-800 text-sm text-gray-500 flex items-center justify-center font-bold">
-                        {srv.count}
-                      </span>
+                      <svg className="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </Link>
                   </li>
                 ))}
@@ -221,7 +235,7 @@ export default function SingleBlogDetail({ postId }) {
                 <span className="absolute bottom-0 left-0 w-8 h-[2px] bg-emerald-500" />
               </h4>
               <p className="text-xs text-[#a0a0a0] leading-relaxed mb-5">
-                Join 20,000 Subscribers!
+                Subscribe to get the latest articles & updates!
               </p>
               <form
                 onSubmit={(e) => {
@@ -245,19 +259,21 @@ export default function SingleBlogDetail({ postId }) {
               </form>
             </div>
 
-            {/* Instagram Grid widget */}
+            {/* Recent posts widget */}
             <div className="bg-[#181818] border border-white/5 rounded-2xl p-6">
               <h4 className="text-white font-bold text-sm tracking-wider uppercase mb-5 relative pb-3">
-                Instagram
+                Back to Blog
                 <span className="absolute bottom-0 left-0 w-8 h-[2px] bg-emerald-500" />
               </h4>
-              <div className="grid grid-cols-3 gap-2">
-                {[1, 2, 3, 4, 5, 6].map((imgIdx) => (
-                  <div key={imgIdx} className="relative aspect-square rounded-lg overflow-hidden border border-zinc-800 group cursor-pointer bg-zinc-900 flex items-center justify-center text-sm">
-                    💻
-                  </div>
-                ))}
-              </div>
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-xs font-bold transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Browse All Articles
+              </Link>
             </div>
           </aside>
 

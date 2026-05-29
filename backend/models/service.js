@@ -1,15 +1,18 @@
 import mongoose from "mongoose";
 
 const ServiceSchema = new mongoose.Schema({
-  // Which tab this service belongs to on the frontend
-  category: { type: String, enum: ["Development", "Design", "Marketing"], default: "Development" },
-  // Unique slug used in href="/service/[id]"
-  slug: { type: String, required: true, unique: true },
-  title: { type: String, required: true },
-  desc: { type: String, required: true },
-  // Optional icon name / SVG string – stored so admin can pick or type a label
+  category: { type: String, required: true },  // "Development" | "Design" | "Marketing"
+  slug:     { type: String, required: true, unique: true },
+  title:    { type: String, required: true },
+  desc:     { type: String, default: "" },
   iconName: { type: String, default: "code" },
-  order: { type: Number, default: 0 },
+
+  // Primary image (backward compat)
+  image:  { type: String, default: "" },
+  // Multiple images — shown on service detail page
+  images: [{ type: String }],
+
+  order:  { type: Number, default: 0 },
 }, { timestamps: true });
 
 export default mongoose.models.Service || mongoose.model("Service", ServiceSchema);

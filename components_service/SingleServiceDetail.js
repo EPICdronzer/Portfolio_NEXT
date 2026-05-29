@@ -112,20 +112,41 @@ const defaultFallback = (title) => ({
   ],
 });
 
-export default function SingleServiceDetail({ serviceId }) {
+export default function SingleServiceDetail({ serviceId, initialService, initialAllServices }) {
   const [formData, setFormData] = useState({ name: "", email: "", service: serviceId, message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
 
-  // Format ID to readable title in case it is a dynamic query
-  const formatTitle = (id) => {
-    return id
-      .split("-")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" ");
-  };
+  /* ── Only use real DB data ── */
+  const currentService = initialService
+    ? {
+        title: initialService.title,
+        mainImage: "/my.png",
+        desc1: initialService.desc,
+        desc2: "Our " + initialService.title + " services are structured to meet high-performance requirements using modern architectural standards.",
+        capabilities: [
+          "Dynamic extensible setup tailored for " + initialService.title + ".",
+          "Secure end-to-end integration and data safety guarantees.",
+          "Optimized speed performance scoring and lightweight footprint.",
+        ],
+        approach: "We analyze target user loops, developing a robust plan to deploy scalable " + initialService.title + " components.",
+        process: [
+          "Goal analysis and technical alignment.",
+          "Clean scalable build execution.",
+          "Comprehensive testing and live deployment.",
+        ],
+        related: [],
+      }
+    : null;
 
-  const currentService = serviceDetailsData[serviceId] || defaultFallback(formatTitle(serviceId));
+  let servicesList = [];
+  if (initialAllServices && initialAllServices.length > 0) {
+    servicesList = initialAllServices.map((s, idx) => ({
+      name: s.title,
+      id: s.slug || s._id,
+      count: 3 + (idx % 4),
+    }));
+  }
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -133,6 +154,35 @@ export default function SingleServiceDetail({ serviceId }) {
     setFormData({ name: "", email: "", service: serviceId, message: "" });
     setTimeout(() => setSubmitted(false), 4500);
   };
+
+  /* ── Service not in DB yet ── */
+  if (!currentService) {
+    return (
+      <section className="bg-[#111111] text-[#dddddd] py-20 px-6 md:px-12 lg:px-24 min-h-[60vh] flex items-center justify-center">
+        <div className="text-center max-w-lg">
+          <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-8">
+            <svg className="w-9 h-9 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-extrabold text-white mb-4 tracking-tight">Service Not Found</h1>
+          <p className="text-gray-400 leading-relaxed mb-8">
+            This service hasn&apos;t been added to the database yet. Head back to browse all available services.
+          </p>
+          <Link
+            href="/service"
+            className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-6 py-3 rounded-full transition-all duration-300 shadow-lg shadow-emerald-500/20"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Services
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-[#111111] text-[#dddddd] py-16 px-6 md:px-12 lg:px-24">
@@ -224,25 +274,27 @@ export default function SingleServiceDetail({ serviceId }) {
               </ul>
             </div>
 
-            {/* Related Services */}
-            <div className="space-y-6 pt-6">
-              <h3 className="text-2xl font-extrabold text-white">Related Service</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {currentService.related.map((rel, idx) => (
-                  <Link
-                    key={idx}
-                    href={`/service/${rel.id}`}
-                    className="group block p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/20 hover:bg-white/[0.04] transition-all duration-300"
-                  >
-                    <span className="text-3xl block mb-4">{rel.icon}</span>
-                    <h4 className="text-white font-bold text-sm mb-2 group-hover:text-emerald-400 transition-colors">
-                      {rel.title}
-                    </h4>
-                    <p className="text-gray-500 text-xs leading-relaxed">{rel.desc}</p>
-                  </Link>
-                ))}
+            {/* Related Services — only shown when DB has related entries */}
+            {currentService.related && currentService.related.length > 0 && (
+              <div className="space-y-6 pt-6">
+                <h3 className="text-2xl font-extrabold text-white">Related Service</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {currentService.related.map((rel, idx) => (
+                    <Link
+                      key={idx}
+                      href={`/service/${rel.id}`}
+                      className="group block p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/20 hover:bg-white/[0.04] transition-all duration-300"
+                    >
+                      <span className="text-3xl block mb-4">{rel.icon}</span>
+                      <h4 className="text-white font-bold text-sm mb-2 group-hover:text-emerald-400 transition-colors">
+                        {rel.title}
+                      </h4>
+                      <p className="text-gray-500 text-xs leading-relaxed">{rel.desc}</p>
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Discussion Form */}
             <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 shadow-xl mt-6 relative">
@@ -315,30 +367,48 @@ export default function SingleServiceDetail({ serviceId }) {
               </div>
             </div>
 
-            {/* Services List widget */}
-            <div className="bg-[#181818] border border-white/5 rounded-2xl p-6">
-              <h4 className="text-white font-bold text-sm tracking-wider uppercase mb-5 relative pb-3">
-                Services
-                <span className="absolute bottom-0 left-0 w-8 h-[2px] bg-emerald-500" />
-              </h4>
-              <ul className="space-y-3">
-                {allServicesList.map((srv) => (
-                  <li key={srv.id}>
-                    <Link
-                      href={`/service/${srv.id}`}
-                      className={`flex items-center justify-between text-xs font-semibold py-3 border-b border-zinc-800 last:border-0 hover:text-emerald-400 transition-colors ${
-                        serviceId === srv.id ? "text-emerald-400" : "text-[#b0b0b0]"
-                      }`}
-                    >
-                      <span>{srv.name}</span>
-                      <span className="w-6 h-6 rounded-full bg-zinc-900 border border-zinc-800 text-sm text-gray-500 flex items-center justify-center font-bold">
-                        {srv.count}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {/* Services List widget — only when DB has services */}
+            {servicesList.length > 0 ? (
+              <div className="bg-[#181818] border border-white/5 rounded-2xl p-6">
+                <h4 className="text-white font-bold text-sm tracking-wider uppercase mb-5 relative pb-3">
+                  Services
+                  <span className="absolute bottom-0 left-0 w-8 h-[2px] bg-emerald-500" />
+                </h4>
+                <ul className="space-y-3">
+                  {servicesList.map((srv) => (
+                    <li key={srv.id}>
+                      <Link
+                        href={`/service/${srv.id}`}
+                        className={`flex items-center justify-between text-xs font-semibold py-3 border-b border-zinc-800 last:border-0 hover:text-emerald-400 transition-colors ${
+                          serviceId === srv.id ? "text-emerald-400" : "text-[#b0b0b0]"
+                        }`}
+                      >
+                        <span>{srv.name}</span>
+                        <svg className="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <div className="bg-[#181818] border border-white/5 rounded-2xl p-6">
+                <h4 className="text-white font-bold text-sm tracking-wider uppercase mb-4 relative pb-3">
+                  Browse Services
+                  <span className="absolute bottom-0 left-0 w-8 h-[2px] bg-emerald-500" />
+                </h4>
+                <Link
+                  href="/service"
+                  className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-xs font-bold transition-colors"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  Back to All Services
+                </Link>
+              </div>
+            )}
 
             {/* Newsletter widget */}
             <div className="bg-[#181818] border border-white/5 rounded-2xl p-6">

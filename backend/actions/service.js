@@ -25,16 +25,21 @@ export async function getServices() {
 export async function addService(data) {
   try {
     await connect();
-    // Auto-generate slug if not provided
     const slug = data.slug || data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     const count = await Service.countDocuments();
+
+    const images = Array.isArray(data.images) ? data.images.filter(Boolean) : [];
+    const image  = images[0] || data.image || "";
+
     const service = await Service.create({
       category: data.category || "Development",
       slug,
-      title: data.title,
-      desc: data.desc,
+      title:    data.title,
+      desc:     data.desc,
       iconName: data.iconName || "code",
-      order: count,
+      image,
+      images,
+      order:    count,
     });
     return { success: true, service: serializeService(service) };
   } catch (error) {
@@ -43,22 +48,36 @@ export async function addService(data) {
   }
 }
 
-/** Update an existing service by _id */
+/** Update an existing service by _id
+ *  imageMode: 'replace' → overwrite images
+ *  imageMode: 'append'  → push new images onto existing
+ */
 export async function updateService(id, data) {
   try {
     await connect();
-    const service = await Service.findByIdAndUpdate(
-      id,
-      {
-        ...(data.category && { category: data.category }),
-        ...(data.slug && { slug: data.slug }),
-        ...(data.title && { title: data.title }),
-        ...(data.desc !== undefined && { desc: data.desc }),
-        ...(data.iconName && { iconName: data.iconName }),
-        ...(data.order !== undefined && { order: data.order }),
-      },
-      { new: true }
-    );
+
+    let updateDoc = {
+      ...(data.category !== undefined && { category: data.category }),
+      ...(data.slug     !== undefined && { slug:     data.slug }),
+      ...(data.title    !== undefined && { title:    data.title }),
+      ...(data.desc     !== undefined && { desc:     data.desc }),
+      ...(data.iconName !== undefined && { iconName: data.iconName }),
+      ...(data.order    !== undefined && { order:    data.order }),
+    };
+
+    const newImages = Array.isArray(data.images) ? data.images.filter(Boolean) : [];
+
+    if (data.imageMode === "append" && newImages.length > 0) {
+      const existing = await Service.findById(id).select("images image");
+      const merged = [...(existing?.images || []), ...newImages];
+      updateDoc.images = merged;
+      updateDoc.image  = merged[0] || existing?.image || "";
+    } else if (newImages.length > 0) {
+      updateDoc.images = newImages;
+      updateDoc.image  = newImages[0];
+    }
+
+    const service = await Service.findByIdAndUpdate(id, updateDoc, { new: true });
     if (!service) return { success: false, error: "Service not found" };
     return { success: true, service: serializeService(service) };
   } catch (error) {
@@ -75,6 +94,22 @@ export async function deleteService(id) {
     return { success: true };
   } catch (error) {
     console.error("deleteService error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/** Get a service by slug or _id */
+export async function getServiceBySlugOrId(slugOrId) {
+  try {
+    await connect();
+    let service = await Service.findOne({ slug: slugOrId });
+    if (!service && slugOrId.match(/^[0-9a-fA-F]{24}$/)) {
+      service = await Service.findById(slugOrId);
+    }
+    if (!service) return { success: false, error: "Service not found" };
+    return { success: true, service: serializeService(service) };
+  } catch (error) {
+    console.error("getServiceBySlugOrId error:", error);
     return { success: false, error: error.message };
   }
 }

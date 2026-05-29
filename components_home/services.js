@@ -168,10 +168,10 @@ export default function Services({ initialServices }) {
   const [activeTab, setActiveTab] = useState("Development");
   const tabs = ["Development", "Design", "Marketing"];
 
-  // Group dynamic services if available, otherwise use hardcoded ones
-  let displayData = servicesData;
-  if (initialServices && initialServices.length > 0) {
-    const grouped = { Development: [], Design: [], Marketing: [] };
+  const hasData = initialServices && initialServices.length > 0;
+
+  const grouped = { Development: [], Design: [], Marketing: [] };
+  if (hasData) {
     initialServices.forEach((s) => {
       const cat = s.category || "Development";
       if (!grouped[cat]) grouped[cat] = [];
@@ -182,10 +182,9 @@ export default function Services({ initialServices }) {
         desc: s.desc,
       });
     });
-    displayData = grouped;
   }
 
-  const currentServices = displayData[activeTab] || [];
+  const currentServices = grouped[activeTab] || [];
 
   return (
     <section id="service" className="bg-[#121212] py-24 px-6 md:px-12 lg:px-24">
@@ -201,65 +200,89 @@ export default function Services({ initialServices }) {
           </p>
         </div>
 
-        {/* Tabs */}
-        <div className="flex justify-center gap-3 mb-12 flex-wrap">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-7 py-2.5 rounded-full font-semibold text-sm tracking-wide transition-all duration-300 ${
-                activeTab === tab
-                  ? "bg-amber-400 text-black shadow-lg shadow-amber-400/20"
-                  : "bg-zinc-800 text-gray-300 hover:bg-zinc-700 hover:text-white"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+        {!hasData ? (
+          <div className="w-full max-w-2xl mx-auto my-12 text-center p-12 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-md shadow-2xl relative overflow-hidden group hover:border-amber-400/20 transition-all duration-500 animate-fadeIn">
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-amber-400/10 rounded-full blur-[80px] group-hover:scale-125 transition-transform duration-700 pointer-events-none" />
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 01-2 2H6a2 2 0 01-2-2m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m15 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-extrabold text-white mb-3 tracking-tight">No Services Added Yet</h3>
+              <p className="text-gray-400 text-sm max-w-md mx-auto leading-relaxed mb-6 font-light">
+                Our administrator hasn't added any services in the backend yet. Please check back later or get in touch directly!
+              </p>
+              <a href="#contact" className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs px-6 py-3 rounded-full transition-all duration-300 shadow-lg shadow-amber-400/10 hover:shadow-amber-400/25">
+                Get in Touch
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+              </a>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Tabs */}
+            <div className="flex justify-center gap-3 mb-12 flex-wrap">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-7 py-2.5 rounded-full font-semibold text-sm tracking-wide transition-all duration-300 ${
+                    activeTab === tab
+                      ? "bg-amber-400 text-black shadow-lg shadow-amber-400/20"
+                      : "bg-zinc-800 text-gray-300 hover:bg-zinc-700 hover:text-white"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
 
-        {/* Service Cards — Swipeable on mobile, grid on desktop */}
-        {/* Mobile horizontal scroll */}
-        <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-6 px-6 snap-x snap-mandatory scrollbar-hide">
-          {currentServices.map((service) => (
-            <Link
-              href={`/service/${service.id}`}
-              key={service.id}
-              className="snap-start flex-shrink-0 w-[75vw] max-w-[300px] group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 flex flex-col items-center text-center hover:border-amber-400/40 transition-all duration-300 cursor-pointer block"
-            >
-              <div className="w-14 h-14 rounded-full bg-zinc-800 group-hover:bg-amber-400/10 flex items-center justify-center mb-5 text-amber-400 transition-all duration-300">
-                {service.icon}
-              </div>
-              <h3 className="text-white font-bold text-base mb-2">{service.title}</h3>
-              <p className="text-gray-400 text-xs leading-relaxed mb-5">{service.desc}</p>
-              <div className="inline-flex items-center gap-2 text-gray-400 group-hover:text-amber-400 text-xs font-semibold transition-colors duration-200 mt-auto">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                Learn More
-              </div>
-            </Link>
-          ))}
-        </div>
+            {/* Service Cards — Swipeable on mobile, grid on desktop */}
+            {/* Mobile horizontal scroll */}
+            <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-6 px-6 snap-x snap-mandatory scrollbar-hide">
+              {currentServices.map((service) => (
+                <Link
+                  href={`/service/${service.id}`}
+                  key={service.id}
+                  className="snap-start flex-shrink-0 w-[75vw] max-w-[300px] group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 flex flex-col items-center text-center hover:border-amber-400/40 transition-all duration-300 cursor-pointer block"
+                >
+                  <div className="w-14 h-14 rounded-full bg-zinc-800 group-hover:bg-amber-400/10 flex items-center justify-center mb-5 text-amber-400 transition-all duration-300">
+                    {service.icon}
+                  </div>
+                  <h3 className="text-white font-bold text-base mb-2">{service.title}</h3>
+                  <p className="text-gray-400 text-xs leading-relaxed mb-5">{service.desc}</p>
+                  <div className="inline-flex items-center gap-2 text-gray-400 group-hover:text-amber-400 text-xs font-semibold transition-colors duration-200 mt-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                    Learn More
+                  </div>
+                </Link>
+              ))}
+            </div>
 
-        {/* Desktop grid */}
-        <div className="hidden md:grid grid-cols-3 gap-6">
-          {currentServices.map((service) => (
-            <Link
-              href={`/service/${service.id}`}
-              key={service.id}
-              className="group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-8 flex flex-col items-center text-center hover:border-amber-400/40 hover:bg-[#1e1e1e] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-400/5 cursor-pointer block"
-            >
-              <div className="w-16 h-16 rounded-full bg-zinc-800 group-hover:bg-amber-400/10 flex items-center justify-center mb-6 text-amber-400 transition-all duration-300">
-                {service.icon}
-              </div>
-              <h3 className="text-white font-bold text-lg mb-3">{service.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">{service.desc}</p>
-              <div className="inline-flex items-center gap-2 text-gray-400 group-hover:text-amber-400 text-sm font-semibold transition-colors duration-200 mt-auto">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                Learn More
-              </div>
-            </Link>
-          ))}
-        </div>
+            {/* Desktop grid */}
+            <div className="hidden md:grid grid-cols-3 gap-6">
+              {currentServices.map((service) => (
+                <Link
+                  href={`/service/${service.id}`}
+                  key={service.id}
+                  className="group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-8 flex flex-col items-center text-center hover:border-amber-400/40 hover:bg-[#1e1e1e] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-400/5 cursor-pointer block"
+                >
+                  <div className="w-16 h-16 rounded-full bg-zinc-800 group-hover:bg-amber-400/10 flex items-center justify-center mb-6 text-amber-400 transition-all duration-300">
+                    {service.icon}
+                  </div>
+                  <h3 className="text-white font-bold text-lg mb-3">{service.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-6">{service.desc}</p>
+                  <div className="inline-flex items-center gap-2 text-gray-400 group-hover:text-amber-400 text-sm font-semibold transition-colors duration-200 mt-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                    Learn More
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+
       </div>
     </section>
   );
