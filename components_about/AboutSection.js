@@ -167,6 +167,50 @@ function StatCard({ stat, started }) {
 export default function AboutSection() {
   const sectionRef = useRef(null);
   const [statsVisible, setStatsVisible] = useState(false);
+  const [projectsBadge, setProjectsBadge] = useState(50);
+  const [dynamicStats, setDynamicStats] = useState([
+    { id: "projects", label: "Projects Done", value: 50, suffix: "+", color: "#10b981", border: "#10b981" },
+    { id: "experience", label: "Years Experience", value: 3, suffix: "+", color: "#f59e0b", border: "#f59e0b" },
+    { id: "clients", label: "Happy Clients", value: 30, suffix: "+", color: "#6366f1", border: "#6366f1" },
+    { id: "skills", label: "Technologies", value: 12, suffix: "+", color: "#ec4899", border: "#ec4899" },
+  ]);
+
+  useEffect(() => {
+    // Dynamic import to avoid SSR conflicts and load settings on client side
+    import("@/backend/actions/settings")
+      .then(({ getSettings }) => getSettings())
+      .then(res => {
+        if (res && res.success && res.settings) {
+          const s = res.settings;
+          setProjectsBadge(s.projectsDone ?? 50);
+
+          const expYears = s.yearsExperience ?? 3;
+          const expMonths = s.experienceMonths ?? 0;
+
+          let expValue = expYears;
+          let expSuffix = "+";
+          let expLabel = "Years Experience";
+
+          if (expYears === 0) {
+            expValue = expMonths;
+            expSuffix = "M+";
+            expLabel = "Months Experience";
+          } else if (expMonths > 0) {
+            expValue = expYears;
+            expSuffix = `Y ${expMonths}M`;
+            expLabel = "Total Experience";
+          }
+
+          setDynamicStats([
+            { id: "projects", label: "Projects Done", value: s.projectsDone ?? 50, suffix: "+", color: "#10b981", border: "#10b981" },
+            { id: "experience", label: expLabel, value: expValue, suffix: expSuffix, color: "#f59e0b", border: "#f59e0b" },
+            { id: "clients", label: "Happy Clients", value: s.happyClients ?? 30, suffix: "+", color: "#6366f1", border: "#6366f1" },
+            { id: "skills", label: "Technologies", value: s.technologies ?? 12, suffix: "+", color: "#ec4899", border: "#ec4899" },
+          ]);
+        }
+      })
+      .catch(err => console.error("Error loading dynamic settings:", err));
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -215,7 +259,7 @@ export default function AboutSection() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                   <div>
-                    <p className="text-white text-xs font-bold leading-none">50+</p>
+                    <p className="text-white text-xs font-bold leading-none">{projectsBadge}+</p>
                     <p className="text-gray-400 text-sm leading-none mt-0.5">Projects Done</p>
                   </div>
                 </div>
@@ -286,7 +330,7 @@ export default function AboutSection() {
 
             {/* ── Stat counters grid ── */}
             <div className="grid grid-cols-2 gap-4">
-              {stats.map((stat) => (
+              {dynamicStats.map((stat) => (
                 <StatCard key={stat.id} stat={stat} started={statsVisible} />
               ))}
             </div>

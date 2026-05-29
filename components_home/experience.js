@@ -66,7 +66,11 @@ const CompanyIcon = ({ index }) => {
   );
 };
 
-export default function Experience() {
+export default function Experience({ initialExperiences }) {
+  const displayExperiences = (initialExperiences && initialExperiences.length > 0)
+    ? initialExperiences
+    : experiences;
+
   return (
     <section id="about" className="bg-[#0f0f0f] py-24 px-6 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto">
@@ -84,26 +88,26 @@ export default function Experience() {
         {/* Experience Cards — Swipeable on mobile, grid on desktop */}
         {/* Mobile horizontal scroll */}
         <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-6 px-6 snap-x snap-mandatory scrollbar-hide">
-          {experiences.map((exp, index) => (
+          {displayExperiences.map((exp, index) => (
             <div
-              key={exp.id}
+              key={exp._id || exp.id}
               className="snap-start flex-shrink-0 w-[75vw] max-w-[300px] group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 flex flex-col items-center text-center hover:border-zinc-600 transition-all duration-300"
             >
               {/* Company Logo Icon */}
               <div className="mb-5">
-                <CompanyIcon index={index} />
+                <CompanyIcon index={index % 3} />
               </div>
 
               {/* Period */}
               <p className="text-white font-extrabold text-2xl mb-2 tracking-tight">
-                {exp.period}
+                {exp.period || `${exp.startMonth} ${exp.startYear} - ${exp.endMonth || 'Present'} ${exp.endYear || ''}`}
               </p>
 
               {/* Role */}
               <h3 className="text-white font-bold text-base mb-2">{exp.role}</h3>
 
               {/* Company */}
-              <p className={`${exp.companyColor} text-sm font-medium mb-1`}>
+              <p className={`${exp.companyColor || "text-emerald-400"} text-sm font-medium mb-1`}>
                 {exp.company}
                 {exp.companyExtra && (
                   <span className="text-gray-500 font-normal"> {exp.companyExtra}</span>
@@ -112,7 +116,7 @@ export default function Experience() {
 
               {/* Link */}
               <a
-                href={exp.href}
+                href={exp.href || "#"}
                 className="inline-flex items-center gap-2 text-gray-500 hover:text-white text-sm font-semibold transition-colors duration-200 mt-5 group/link"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover/link:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -126,26 +130,26 @@ export default function Experience() {
 
         {/* Desktop grid */}
         <div className="hidden md:grid grid-cols-3 gap-6">
-          {experiences.map((exp, index) => (
+          {displayExperiences.map((exp, index) => (
             <div
-              key={exp.id}
+              key={exp._id || exp.id}
               className="group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-8 flex flex-col items-center text-center hover:border-zinc-600 hover:bg-[#1e1e1e] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30"
             >
               {/* Company Logo Icon */}
               <div className="mb-5">
-                <CompanyIcon index={index} />
+                <CompanyIcon index={index % 3} />
               </div>
 
               {/* Period */}
               <p className="text-white font-extrabold text-2xl mb-2 tracking-tight">
-                {exp.period}
+                {exp.period || `${exp.startMonth} ${exp.startYear} - ${exp.endMonth || 'Present'} ${exp.endYear || ''}`}
               </p>
 
               {/* Role */}
               <h3 className="text-white font-bold text-base mb-2">{exp.role}</h3>
 
               {/* Company */}
-              <p className={`${exp.companyColor} text-sm font-medium mb-1`}>
+              <p className={`${exp.companyColor || "text-emerald-400"} text-sm font-medium mb-1`}>
                 {exp.company}
                 {exp.companyExtra && (
                   <span className="text-gray-500 font-normal"> {exp.companyExtra}</span>
@@ -154,7 +158,7 @@ export default function Experience() {
 
               {/* Link */}
               <a
-                href={exp.href}
+                href={exp.href || "#"}
                 className="inline-flex items-center gap-2 text-gray-500 hover:text-white text-sm font-semibold transition-colors duration-200 mt-5 group/link"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover/link:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

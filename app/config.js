@@ -12,11 +12,11 @@ export const siteConfig = {
     github: process.env.NEXT_PUBLIC_SOCIAL_GITHUB || "https://github.com/EPICdronzer",
   },
   cloudinary: {
-    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "your_cloud_name",
-    apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || "your_api_key",
-    apiSecret: process.env.CLOUDINARY_API_SECRET || "your_api_secret",
+    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dmxl9hnrm",
+    apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || "442673639689528",
+    apiSecret: process.env.CLOUDINARY_API_SECRET || "XmrsFQkJnN8w2VwXbHNUeJo7QEA",
   },
   mongodb: {
-    uri: process.env.MONGO_URL || "mongodb://localhost:27017/portfolio",
+    uri: process.env.MONGO_URL || "mongodb+srv://vharsh2003:vHARSH3081@cluster0.tnpe4.mongodb.net/portfolio?appName=Cluster0",
   },
 };

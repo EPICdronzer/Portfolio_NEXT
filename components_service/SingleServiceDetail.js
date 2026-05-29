@@ -115,6 +115,7 @@ const defaultFallback = (title) => ({
 export default function SingleServiceDetail({ serviceId }) {
   const [formData, setFormData] = useState({ name: "", email: "", service: serviceId, message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
 
   // Format ID to readable title in case it is a dynamic query
   const formatTitle = (id) => {
@@ -348,26 +349,32 @@ export default function SingleServiceDetail({ serviceId }) {
               <p className="text-xs text-[#a0a0a0] leading-relaxed mb-5">
                 Join 20,000 Subscribers!
               </p>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  alert("Successfully signed up!");
-                }}
-                className="space-y-3"
-              >
-                <input
-                  type="email"
-                  required
-                  placeholder="Email Address"
-                  className="w-full bg-[#111] border border-zinc-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-500 text-white"
-                />
-                <button
-                  type="submit"
-                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3.5 rounded-xl text-xs transition-colors"
+              {newsletterSubmitted ? (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-emerald-400 text-xs font-semibold text-center animate-fade-in">
+                  ✓ Successfully signed up! Welcome to our newsletter.
+                </div>
+              ) : (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setNewsletterSubmitted(true);
+                  }}
+                  className="space-y-3"
                 >
-                  Sign Up
-                </button>
-              </form>
+                  <input
+                    type="email"
+                    required
+                    placeholder="Email Address"
+                    className="w-full bg-[#111] border border-zinc-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-500 text-white"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3.5 rounded-xl text-xs transition-colors"
+                  >
+                    Sign Up
+                  </button>
+                </form>
+              )}
               <p className="text-sm text-gray-600 mt-4 leading-normal">
                 By signing up you agree to our{" "}
                 <Link href="/privacy" className="text-gray-400 hover:underline">

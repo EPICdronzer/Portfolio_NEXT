@@ -47,11 +47,15 @@ const projects = [
   },
 ];
 
-export default function Portfolio() {
+export default function Portfolio({ initialPortfolios }) {
+  const displayProjects = (initialPortfolios && initialPortfolios.length > 0)
+    ? initialPortfolios
+    : projects;
+
   const [current, setCurrent] = useState(0);
   const perPage = 3;
-  const totalPages = Math.ceil(projects.length / perPage);
-  const visible = projects.slice(current * perPage, current * perPage + perPage);
+  const totalPages = Math.ceil(displayProjects.length / perPage);
+  const visible = displayProjects.slice(current * perPage, current * perPage + perPage);
 
   return (
     <section id="portfolio" className="py-24 px-6 md:px-12 lg:px-24 relative overflow-hidden"
@@ -84,10 +88,10 @@ export default function Portfolio() {
         {/* Project Cards — swipeable on mobile, grid on desktop */}
         {/* Mobile: horizontal scroll carousel */}
         <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-6 px-6 snap-x snap-mandatory scrollbar-hide mb-6">
-          {projects.map((project) => (
+          {displayProjects.map((project) => (
             <Link
-              key={project.id}
-              href={`/portfolio/${project.id}`}
+              key={project._id || project.id}
+              href={project.href || `/portfolio/${project.slug || project._id || project.id}`}
               className="snap-start flex-shrink-0 w-[75vw] max-w-[280px] group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 cursor-pointer"
             >
               <div className="relative h-44 overflow-hidden">
@@ -107,8 +111,8 @@ export default function Portfolio() {
           <div className="grid grid-cols-3 gap-6 mb-10">
             {visible.map((project) => (
               <Link
-                key={project.id}
-                href={`/portfolio/${project.id}`}
+                key={project._id || project.id}
+                href={project.href || `/portfolio/${project.slug || project._id || project.id}`}
                 className="group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40"
               >
                 <div className="relative h-72 overflow-hidden">
@@ -123,14 +127,16 @@ export default function Portfolio() {
             ))}
           </div>
           {/* Carousel Nav */}
-          <div className="flex justify-center gap-3">
-            <button onClick={() => setCurrent((p) => Math.max(0, p - 1))} disabled={current === 0} className="w-10 h-10 rounded-full border border-zinc-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200" aria-label="Previous">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-            </button>
-            <button onClick={() => setCurrent((p) => Math.min(totalPages - 1, p + 1))} disabled={current === totalPages - 1} className="w-10 h-10 rounded-full border border-zinc-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200" aria-label="Next">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-            </button>
-          </div>
+          {totalPages > 1 && (
+            <div className="flex justify-center gap-3">
+              <button onClick={() => setCurrent((p) => Math.max(0, p - 1))} disabled={current === 0} className="w-10 h-10 rounded-full border border-zinc-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200" aria-label="Previous">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <button onClick={() => setCurrent((p) => Math.min(totalPages - 1, p + 1))} disabled={current === totalPages - 1} className="w-10 h-10 rounded-full border border-zinc-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200" aria-label="Next">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>

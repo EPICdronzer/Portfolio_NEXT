@@ -86,7 +86,7 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <a href={siteConfig.socialLinks.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group mb-5">
               <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-emerald-500/30 group-hover:border-emerald-500 transition-all duration-300">
-                <Image src="/logo.png" alt="Harsh Vashishth logo" fill className="object-cover" />
+                <Image src="/logo.png" alt="Harsh Vashishth logo" fill sizes="44px" className="object-cover" />
               </div>
               <span className="text-2xl font-extrabold tracking-tight text-white">
                 Harsh Vashishth<span className="text-emerald-400">.</span>

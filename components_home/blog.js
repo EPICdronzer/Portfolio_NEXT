@@ -47,11 +47,15 @@ const posts = [
   },
 ];
 
-export default function Blog() {
+export default function Blog({ initialBlogs }) {
+  const displayBlogs = (initialBlogs && initialBlogs.length > 0)
+    ? initialBlogs
+    : posts;
+
   const [current, setCurrent] = useState(0);
   const perPage = 3;
-  const totalPages = Math.ceil(posts.length / perPage);
-  const visible = posts.slice(current * perPage, current * perPage + perPage);
+  const totalPages = Math.ceil(displayBlogs.length / perPage);
+  const visible = displayBlogs.slice(current * perPage, current * perPage + perPage);
 
   return (
     <section id="blog" className="bg-[#111] py-24 px-6 md:px-12 lg:px-24 relative overflow-hidden">
@@ -70,10 +74,10 @@ export default function Blog() {
         {/* Blog Cards — swipeable on mobile, grid+arrows on desktop */}
         {/* Mobile: horizontal scroll carousel */}
         <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-6 px-6 snap-x snap-mandatory scrollbar-hide">
-          {posts.map((post) => (
+          {displayBlogs.map((post) => (
             <Link
-              key={post.id}
-              href={`/blog/${post.id}`}
+              key={post._id || post.id}
+              href={post.href || `/blog/${post.slug || post._id || post.id}`}
               className="snap-start flex-shrink-0 w-[75vw] max-w-[280px] group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300"
             >
               <div className="relative h-40 overflow-hidden">
@@ -105,8 +109,8 @@ export default function Blog() {
             <div className="grid grid-cols-3 gap-6 flex-grow">
               {visible.map((post) => (
                 <Link
-                  key={post.id}
-                  href={`/blog/${post.id}`}
+                  key={post._id || post.id}
+                  href={post.href || `/blog/${post.slug || post._id || post.id}`}
                   className="group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30"
                 >
                   <div className="relative h-52 overflow-hidden">

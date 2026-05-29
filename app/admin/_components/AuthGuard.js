@@ -7,6 +7,7 @@ import AdminSidebar from "./AdminSidebar";
 import AdminModal from "./AdminModal";
 import AdminToast from "./AdminToast";
 import MessageModal from "./MessageModal";
+import CustomDialog from "./CustomDialog";
 
 export default function AuthGuard({ children }) {
   const { isLoggedIn, authChecked } = useAdmin();
@@ -37,6 +38,7 @@ export default function AuthGuard({ children }) {
       <AdminModal />
       <AdminToast />
       <MessageModal />
+      <CustomDialog />
     </div>
   );
 }

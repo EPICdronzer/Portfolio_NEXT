@@ -1,35 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-
-// ─── Mock Initial Data ────────────────────────────────────────────────────────
-const initialServices = [
-  { id: "web-dev", title: "Web Development", desc: "Design and develop scalable, responsive web applications using modern web technologies." },
-  { id: "app-dev", title: "App Development", desc: "Create high-performance iOS and Android mobile apps with native feels and fluid UI." },
-  { id: "ui-design", title: "UI/UX Design", desc: "Craft intuitive, beautiful, and accessible design experiences centered around user needs." },
-];
-
-const initialExperiences = [
-  { id: "exp-1", period: "2015 - 2016", role: "Junior Visual Designer", company: "Trapeza Group, USA.", companyExtra: "(Remote)", companyColor: "text-rose-400" },
-  { id: "exp-2", period: "2017 - 2018", role: "UI/UX Designer", company: "Gallerie Ontario, Canada", companyExtra: "(Remote)", companyColor: "text-blue-400" },
-  { id: "exp-3", period: "2019 - 2020", role: "Senior UI/UX Designer", company: "Morson Hybrid, Canada", companyExtra: "", companyColor: "text-green-400" },
-];
-
-const initialProjects = [
-  { id: "proj-1", title: "DesiCart - Saree & Ethnic Wear E-commerce", category: "E-commerce . UI Design", image: "/portfolio_screenshots.png", href: "#" },
-  { id: "proj-2", title: "PayBharat - UPI Payment Dashboard", category: "FinTech . Web App", image: "/portfolio_screenshots.png", href: "#" },
-  { id: "proj-3", title: "Mumbai Metro Transit App Concept", category: "UI/UX Design . Mobile", image: "/portfolio_screenshots.png", href: "#" },
-];
-
-const initialBlogs = [
-  { id: "post-1", date: "January 02, 2025", title: "Have evolved over the years sometimes accident.", image: "/blog_thumbnails.png", href: "#" },
-  { id: "post-2", date: "January 03, 2025", title: "The Internet tend to repeat predefined chunks.", image: "/blog_thumbnails.png", href: "#" },
-];
-
-const initialMessages = [
-  { id: "msg-1", name: "Priya Sharma", email: "priya@example.com", date: "May 28, 2026", message: "Hi Harsh! I love your portfolio. I'm looking to build an e-commerce platform for ethnic wear and would like to hire you. Let me know your availability.", read: false },
-  { id: "msg-2", name: "David Miller", email: "david@millermedia.co", date: "May 26, 2026", message: "Hello. We have an opening for a remote Senior Web Developer position. Your UI work is exceptional. Are you interested in a chat?", read: true },
-];
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { getSettings, updateSettings, loginAdmin } from "@/backend/actions/settings";
+import { getServices, addService, updateService, deleteService } from "@/backend/actions/service";
+import { getPortfolios, addPortfolio, updatePortfolio, deletePortfolio } from "@/backend/actions/portfolio";
+import { getExperiences, addExperience, updateExperience, deleteExperience } from "@/backend/actions/experience";
+import { getBlogs, addBlog, updateBlog, deleteBlog } from "@/backend/actions/blog";
+import { getMessages, toggleMessageRead, deleteMessage } from "@/backend/actions/messages";
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 const AdminContext = createContext(null);
@@ -39,51 +16,144 @@ export function AdminProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
 
-  // Data
-  const [services, setServices] = useState(initialServices);
-  const [experiences, setExperiences] = useState(initialExperiences);
-  const [projects, setProjects] = useState(initialProjects);
-  const [blogs, setBlogs] = useState(initialBlogs);
-  const [messages, setMessages] = useState(initialMessages);
+  // System Settings (DB-backed statistics counts)
+  const [systemSettings, setSystemSettings] = useState({
+    projectsDone: 50,
+    yearsExperience: 3,
+    experienceMonths: 0,
+    happyClients: 30,
+    technologies: 12,
+  });
+
+  // Data state — loaded from MongoDB
+  const [services, setServices] = useState([]);
+  const [experiences, setExperiences] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [dataLoading, setDataLoading] = useState(true);
 
   // Toast
   const [toast, setToast] = useState({ show: false, message: "", type: "success" });
 
-  // Modal
+  // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
   const [modalAction, setModalAction] = useState("add");
-  const [editId, setEditId] = useState(null);
+  const [editItem, setEditItem] = useState(null);
 
-  // Form fields
-  const [formService, setFormService] = useState({ title: "", desc: "" });
-  const [formExp, setFormExp] = useState({ period: "", role: "", company: "", companyExtra: "", companyColor: "text-emerald-400" });
-  const [formProj, setFormProj] = useState({ title: "", category: "", image: "/portfolio_screenshots.png", href: "#" });
-  const [formBlog, setFormBlog] = useState({ title: "", date: "", image: "/blog_thumbnails.png", href: "#" });
+  // Form fields — each section has its own form state
+  const defaultFormService = { category: "Development", title: "", desc: "", iconName: "code", slug: "" };
+  const defaultFormExp = { startMonth: "", startYear: "", endMonth: "", endYear: "", role: "", company: "", companyExtra: "", href: "#" };
+  const defaultFormProj = { title: "", category: "", image: "/portfolio_screenshots.png", imgPos: "object-center", href: "#", slug: "" };
+  const defaultFormBlog = { title: "", date: "", image: "/blog_thumbnails.png", imgPos: "object-center", content: "", slug: "" };
+
+  const [formService, setFormService] = useState(defaultFormService);
+  const [formExp, setFormExp] = useState(defaultFormExp);
+  const [formProj, setFormProj] = useState(defaultFormProj);
+  const [formBlog, setFormBlog] = useState(defaultFormBlog);
 
   // Message view
   const [viewMessage, setViewMessage] = useState(null);
 
-  // ── Hydrate auth from localStorage ───────────────────────────────────────
+  // ── Toast helper ──────────────────────────────────────────────────────────
+  const showToast = useCallback((message, type = "success") => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: "", type: "success" }), 3000);
+  }, []);
+
+  // ── Custom Alert/Confirm Dialog ───────────────────────────────────────────
+  const [dialog, setDialog] = useState({
+    show: false,
+    title: "",
+    message: "",
+    type: "info",
+    isConfirm: false,
+    onConfirm: null,
+    onCancel: null
+  });
+
+  const showAlert = useCallback((message, title = "Alert", type = "info") => {
+    setDialog({
+      show: true,
+      title,
+      message,
+      type,
+      isConfirm: false,
+      onConfirm: null,
+      onCancel: null
+    });
+  }, []);
+
+  const showConfirm = useCallback((message, onConfirm, title = "Are you sure?", type = "warning") => {
+    setDialog({
+      show: true,
+      title,
+      message,
+      type,
+      isConfirm: true,
+      onConfirm: () => {
+        onConfirm();
+        setDialog(prev => ({ ...prev, show: false }));
+      },
+      onCancel: () => {
+        setDialog(prev => ({ ...prev, show: false }));
+      }
+    });
+  }, []);
+
+  // ── Load all data from MongoDB ────────────────────────────────────────────
+  const loadAllData = useCallback(async () => {
+    setDataLoading(true);
+    try {
+      const [settingsRes, servicesRes, portfolioRes, expRes, blogsRes, msgsRes] = await Promise.all([
+        getSettings(),
+        getServices(),
+        getPortfolios(),
+        getExperiences(),
+        getBlogs(),
+        getMessages(),
+      ]);
+
+      if (settingsRes.success && settingsRes.settings) setSystemSettings(settingsRes.settings);
+      if (servicesRes.success) setServices(servicesRes.services || []);
+      if (portfolioRes.success) setProjects(portfolioRes.portfolios || []);
+      if (expRes.success) setExperiences(expRes.experiences || []);
+      if (blogsRes.success) setBlogs(blogsRes.blogs || []);
+      if (msgsRes.success) setMessages(msgsRes.messages || []);
+    } catch (err) {
+      console.error("Error loading data:", err);
+    }
+    setDataLoading(false);
+  }, []);
+
+  // ── Hydrate auth on mount ─────────────────────────────────────────────────
   useEffect(() => {
     const logged = localStorage.getItem("portfolio_admin_logged");
     if (logged === "true") setIsLoggedIn(true);
     setAuthChecked(true);
-  }, []);
+    loadAllData();
+  }, [loadAllData]);
 
   // ── Auth Actions ──────────────────────────────────────────────────────────
-  const handleLogin = (username, password, onError, onLoading) => {
+  const handleLogin = async (username, password, onError, onLoading) => {
     onLoading(true);
-    setTimeout(() => {
-      if (username === "admin" && password === "admin123") {
+    onError("");
+    try {
+      const res = await loginAdmin(username, password);
+      if (res.success) {
         setIsLoggedIn(true);
         localStorage.setItem("portfolio_admin_logged", "true");
         showToast("Logged in successfully!", "success");
       } else {
-        onError("Invalid username or password. (Use: admin / admin123)");
+        onError(res.error || "Invalid username or password.");
       }
+    } catch (err) {
+      console.error("Login call failed:", err);
+      onError("Database or server connection error.");
+    } finally {
       onLoading(false);
-    }, 800);
+    }
   };
 
   const handleLogout = () => {
@@ -92,100 +162,215 @@ export function AdminProvider({ children }) {
     showToast("Logged out successfully!", "info");
   };
 
-  // ── Toast ─────────────────────────────────────────────────────────────────
-  const showToast = (message, type = "success") => {
-    setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: "", type: "success" }), 3000);
+  // ── Settings Save Action ──────────────────────────────────────────────────
+  const updateSystemSettings = async (settingsData) => {
+    try {
+      const res = await updateSettings(settingsData);
+      if (res.success && res.settings) {
+        setSystemSettings(res.settings);
+        showToast("Settings updated successfully!");
+        return true;
+      } else {
+        showToast(res.error || "Failed to update settings.", "warning");
+        return false;
+      }
+    } catch (err) {
+      console.error("Failed to update settings:", err);
+      showToast("Server connection error.", "warning");
+      return false;
+    }
   };
 
   // ── Modal Helpers ─────────────────────────────────────────────────────────
   const openAddModal = (type) => {
     setModalType(type);
     setModalAction("add");
-    setEditId(null);
-    setFormService({ title: "", desc: "" });
-    setFormExp({ period: "", role: "", company: "", companyExtra: "", companyColor: "text-emerald-400" });
-    setFormProj({ title: "", category: "", image: "/portfolio_screenshots.png", href: "#" });
-    setFormBlog({ title: "", date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "2-digit" }), image: "/blog_thumbnails.png", href: "#" });
+    setEditItem(null);
+    setFormService({ ...defaultFormService });
+    setFormExp({ ...defaultFormExp });
+    setFormProj({ ...defaultFormProj });
+    setFormBlog({
+      ...defaultFormBlog,
+      date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "2-digit" }),
+    });
     setIsModalOpen(true);
   };
 
   const openEditModal = (type, item) => {
     setModalType(type);
     setModalAction("edit");
-    setEditId(item.id);
-    if (type === "services") setFormService({ title: item.title, desc: item.desc });
-    if (type === "experience") setFormExp({ period: item.period, role: item.role, company: item.company, companyExtra: item.companyExtra || "", companyColor: item.companyColor || "text-emerald-400" });
-    if (type === "portfolio") setFormProj({ title: item.title, category: item.category, image: item.image, href: item.href });
-    if (type === "blog") setFormBlog({ title: item.title, date: item.date, image: item.image, href: item.href });
+    setEditItem(item);
+    if (type === "services") {
+      setFormService({
+        category: item.category || "Development",
+        title: item.title,
+        desc: item.desc,
+        iconName: item.iconName || "code",
+        slug: item.slug || "",
+      });
+    }
+    if (type === "experience") {
+      setFormExp({
+        startMonth:   item.startMonth   || "",
+        startYear:    item.startYear    || "",
+        endMonth:     item.endMonth     || "",
+        endYear:      item.endYear      || "",
+        role:         item.role         || "",
+        company:      item.company      || "",
+        companyExtra: item.companyExtra || "",
+        href:         item.href         || "#",
+      });
+    }
+    if (type === "portfolio") {
+      setFormProj({
+        title:    item.title,
+        category: item.category,
+        image:    item.image   || "/portfolio_screenshots.png",
+        imgPos:   item.imgPos  || "object-center",
+        href:     item.href    || "#",
+        slug:     item.slug    || "",
+      });
+    }
+    if (type === "blog") {
+      setFormBlog({
+        title:   item.title,
+        date:    item.date,
+        image:   item.image   || "/blog_thumbnails.png",
+        imgPos:  item.imgPos  || "object-center",
+        content: item.content || "",
+        slug:    item.slug    || "",
+      });
+    }
     setIsModalOpen(true);
   };
 
-  // ── CRUD ──────────────────────────────────────────────────────────────────
-  const handleSave = (e) => {
+  // ── CRUD — all connected to MongoDB ──────────────────────────────────────
+  const handleSave = async (e) => {
     e.preventDefault();
+    setIsModalOpen(false);
+
     if (modalType === "services") {
       if (modalAction === "add") {
-        setServices(prev => [...prev, { id: `service-${Date.now()}`, ...formService }]);
-        showToast("Service added successfully!");
+        const res = await addService(formService);
+        if (res.success) {
+          setServices(prev => [...prev, res.service]);
+          showToast("Service added successfully!");
+        } else {
+          showToast(res.error || "Failed to add service.", "warning");
+        }
       } else {
-        setServices(prev => prev.map(s => s.id === editId ? { ...s, ...formService } : s));
-        showToast("Service updated!");
-      }
-    } else if (modalType === "experience") {
-      if (modalAction === "add") {
-        setExperiences(prev => [...prev, { id: `exp-${Date.now()}`, ...formExp }]);
-        showToast("Experience added!");
-      } else {
-        setExperiences(prev => prev.map(e => e.id === editId ? { ...e, ...formExp } : e));
-        showToast("Experience updated!");
-      }
-    } else if (modalType === "portfolio") {
-      if (modalAction === "add") {
-        setProjects(prev => [...prev, { id: `proj-${Date.now()}`, ...formProj }]);
-        showToast("Project added!");
-      } else {
-        setProjects(prev => prev.map(p => p.id === editId ? { ...p, ...formProj } : p));
-        showToast("Project updated!");
-      }
-    } else if (modalType === "blog") {
-      if (modalAction === "add") {
-        setBlogs(prev => [...prev, { id: `post-${Date.now()}`, ...formBlog }]);
-        showToast("Blog post published!");
-      } else {
-        setBlogs(prev => prev.map(b => b.id === editId ? { ...b, ...formBlog } : b));
-        showToast("Blog post updated!");
+        const res = await updateService(editItem._id, formService);
+        if (res.success) {
+          setServices(prev => prev.map(s => s._id === editItem._id ? res.service : s));
+          showToast("Service updated!");
+        } else {
+          showToast(res.error || "Failed to update service.", "warning");
+        }
       }
     }
-    setIsModalOpen(false);
+
+    if (modalType === "experience") {
+      if (modalAction === "add") {
+        const res = await addExperience(formExp);
+        if (res.success) {
+          setExperiences(prev => [...prev, res.experience]);
+          showToast("Experience added!");
+        } else {
+          showToast(res.error || "Failed to add experience.", "warning");
+        }
+      } else {
+        const res = await updateExperience(editItem._id, formExp);
+        if (res.success) {
+          setExperiences(prev => prev.map(e => e._id === editItem._id ? res.experience : e));
+          showToast("Experience updated!");
+        } else {
+          showToast(res.error || "Failed to update experience.", "warning");
+        }
+      }
+    }
+
+    if (modalType === "portfolio") {
+      if (modalAction === "add") {
+        const res = await addPortfolio(formProj);
+        if (res.success) {
+          setProjects(prev => [...prev, res.portfolio]);
+          showToast("Project added!");
+        } else {
+          showToast(res.error || "Failed to add project.", "warning");
+        }
+      } else {
+        const res = await updatePortfolio(editItem._id, formProj);
+        if (res.success) {
+          setProjects(prev => prev.map(p => p._id === editItem._id ? res.portfolio : p));
+          showToast("Project updated!");
+        } else {
+          showToast(res.error || "Failed to update project.", "warning");
+        }
+      }
+    }
+
+    if (modalType === "blog") {
+      if (modalAction === "add") {
+        const res = await addBlog(formBlog);
+        if (res.success) {
+          setBlogs(prev => [res.blog, ...prev]);
+          showToast("Blog post published!");
+        } else {
+          showToast(res.error || "Failed to publish blog.", "warning");
+        }
+      } else {
+        const res = await updateBlog(editItem._id, formBlog);
+        if (res.success) {
+          setBlogs(prev => prev.map(b => b._id === editItem._id ? res.blog : b));
+          showToast("Blog post updated!");
+        } else {
+          showToast(res.error || "Failed to update blog.", "warning");
+        }
+      }
+    }
   };
 
-  const handleDelete = (type, id) => {
-    if (!window.confirm("Are you sure you want to delete this item?")) return;
-    const actions = {
-      services: () => { setServices(prev => prev.filter(i => i.id !== id)); showToast("Service deleted", "warning"); },
-      experience: () => { setExperiences(prev => prev.filter(i => i.id !== id)); showToast("Experience deleted", "warning"); },
-      portfolio: () => { setProjects(prev => prev.filter(i => i.id !== id)); showToast("Project deleted", "warning"); },
-      blog: () => { setBlogs(prev => prev.filter(i => i.id !== id)); showToast("Blog post deleted", "warning"); },
-      messages: () => { setMessages(prev => prev.filter(i => i.id !== id)); showToast("Message deleted", "warning"); },
-    };
-    actions[type]?.();
+  const handleDelete = async (type, id) => {
+    showConfirm(
+      `Are you sure you want to delete this ${type.slice(0, -1) || 'item'}? This action cannot be undone.`,
+      async () => {
+        const actions = {
+          services:   async () => { const r = await deleteService(id);    if (r.success) { setServices(prev => prev.filter(i => i._id !== id));    showToast("Service deleted", "warning"); }   },
+          experience: async () => { const r = await deleteExperience(id); if (r.success) { setExperiences(prev => prev.filter(i => i._id !== id)); showToast("Experience deleted", "warning"); } },
+          portfolio:  async () => { const r = await deletePortfolio(id);  if (r.success) { setProjects(prev => prev.filter(i => i._id !== id));   showToast("Project deleted", "warning"); }   },
+          blog:       async () => { const r = await deleteBlog(id);       if (r.success) { setBlogs(prev => prev.filter(i => i._id !== id));       showToast("Blog deleted", "warning"); }       },
+          messages:   async () => { const r = await deleteMessage(id);    if (r.success) { setMessages(prev => prev.filter(i => i._id !== id));   showToast("Message deleted", "warning"); }   },
+        };
+        if (actions[type]) await actions[type]();
+      },
+      "Delete Item",
+      "danger"
+    );
   };
 
-  const toggleReadMessage = (id) => {
-    setMessages(prev => prev.map(m => m.id === id ? { ...m, read: !m.read } : m));
+  const toggleReadMessage = async (id) => {
+    const res = await toggleMessageRead(id);
+    if (res.success) {
+      setMessages(prev => prev.map(m => m._id === id ? { ...m, read: res.message.read } : m));
+    }
   };
 
   return (
     <AdminContext.Provider value={{
       // Auth
       isLoggedIn, authChecked, handleLogin, handleLogout,
+      // System Settings
+      systemSettings, updateSystemSettings,
       // Data
-      services, experiences, projects, blogs, messages,
+      services, experiences, projects, blogs, messages, dataLoading,
+      // Refresh
+      loadAllData,
       // Toast
       toast, showToast,
+      // Dialog
+      dialog, setDialog, showAlert, showConfirm,
       // Modal
-      isModalOpen, setIsModalOpen, modalType, modalAction, editId,
+      isModalOpen, setIsModalOpen, modalType, modalAction, editItem,
       openAddModal, openEditModal, handleSave, handleDelete,
       // Forms
       formService, setFormService,
