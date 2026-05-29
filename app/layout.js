@@ -9,7 +9,7 @@ const outfit = Outfit({
 
 export const metadata = {
   title: "Harsh Vashishth - Creative Portfolio",
-  description: "Modern portfolio for Aliza, Fashion Designer.",
+  description: "Modern portfolio for Harsh Vashishth, Web Developer.",
 };
 
 export default function RootLayout({ children }) {

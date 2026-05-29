@@ -108,7 +108,7 @@ export default function PortfolioDetail() {
             <button
               key={cat}
               onClick={() => handleFilterChange(cat)}
-              className={`text-[11px] font-bold tracking-wider transition-colors duration-300 ${
+              className={`text-sm font-bold tracking-wider transition-colors duration-300 ${
                 activeFilter === cat
                   ? "text-emerald-400"
                   : "text-gray-300 hover:text-white"
@@ -166,7 +166,7 @@ export default function PortfolioDetail() {
                   )}
 
                   {/* Category pill */}
-                  <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-emerald-400 mb-2">
+                  <span className="inline-block text-sm font-bold tracking-[0.2em] uppercase text-emerald-400 mb-2">
                     {project.category}
                   </span>
 

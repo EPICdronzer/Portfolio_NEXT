@@ -205,7 +205,7 @@ export default function SingleBlogDetail({ postId }) {
                       className="flex items-center justify-between text-xs font-semibold py-3 border-b border-zinc-800 last:border-0 hover:text-emerald-400 transition-colors text-[#b0b0b0]"
                     >
                       <span>{srv.name}</span>
-                      <span className="w-6 h-6 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] text-gray-500 flex items-center justify-center font-bold">
+                      <span className="w-6 h-6 rounded-full bg-zinc-900 border border-zinc-800 text-sm text-gray-500 flex items-center justify-center font-bold">
                         {srv.count}
                       </span>
                     </Link>

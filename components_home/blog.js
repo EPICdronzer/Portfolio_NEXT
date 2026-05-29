@@ -80,7 +80,7 @@ export default function Blog() {
                 <Image src={post.image} alt={post.title} fill className={`object-cover ${post.imgPos} group-hover:scale-105 transition-transform duration-500`} />
               </div>
               <div className="p-4">
-                <span className="inline-block text-[10px] text-gray-500 border border-zinc-700 px-2 py-0.5 rounded-full mb-2 font-medium">{post.date}</span>
+                <span className="inline-block text-sm text-gray-500 border border-zinc-700 px-2 py-0.5 rounded-full mb-2 font-medium">{post.date}</span>
                 <h3 className="text-white font-bold text-sm leading-snug mb-2 group-hover:text-emerald-400 transition-colors duration-200 line-clamp-2">{post.title}</h3>
                 <span className="inline-flex items-center gap-1 text-gray-500 text-xs font-semibold">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>

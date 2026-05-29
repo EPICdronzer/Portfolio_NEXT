@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { siteConfig } from "@/app/config";
 
 export default function ContactDetail() {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
@@ -33,34 +34,49 @@ export default function ContactDetail() {
             </h2>
 
             {/* Email Card */}
-            <div className="flex gap-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all duration-300">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 flex-shrink-0">
+            <a href={`mailto:${siteConfig.email}`} className="flex gap-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all duration-300 group">
+              <div className="w-12 h-12 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-400 flex-shrink-0 group-hover:scale-105 transition-transform">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
               <div>
                 <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-1">Email Me</h4>
-                <p className="text-gray-400 text-sm hover:text-emerald-400 transition-colors">
-                  vharsh2003@gmail.com
+                <p className="text-gray-400 text-sm group-hover:text-sky-400 transition-colors">
+                  {siteConfig.email}
                 </p>
               </div>
-            </div>
+            </a>
 
             {/* Phone Card */}
-            <div className="flex gap-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all duration-300">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 flex-shrink-0">
+            <a href={`tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`} className="flex gap-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all duration-300 group">
+              <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 flex-shrink-0 group-hover:scale-105 transition-transform">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
               </div>
               <div>
                 <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-1">Call Me</h4>
-                <p className="text-gray-400 text-sm hover:text-amber-400 transition-colors">
-                  +91 98765 43210
+                <p className="text-gray-400 text-sm group-hover:text-amber-400 transition-colors">
+                  {siteConfig.phone}
                 </p>
               </div>
-            </div>
+            </a>
+
+            {/* WhatsApp Card */}
+            <a href={`https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noopener noreferrer" className="flex gap-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all duration-300 group">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 flex-shrink-0 group-hover:scale-105 transition-transform">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.47l-6.256 1.648zM5.84 19.479c1.696.993 3.522 1.547 5.414 1.548l.004.001c5.441-.001 9.866-4.426 9.869-9.87.001-2.637-1.03-5.112-2.905-6.985A9.799 9.799 0 0 0 11.233 1.34c-5.438 0-9.867 4.425-9.87 9.871-.001 1.992.518 3.94 1.511 5.66l-.991 3.616 3.957-.991-.001-.017zM18.17 14.88c-.3-.149-1.772-.874-2.046-.974-.275-.1-.475-.149-.675.15-.2.299-.774.974-.949 1.173-.174.199-.349.224-.649.075-.3-.15-1.266-.467-2.41-1.485-.89-.792-1.49-1.77-1.665-2.07-.174-.3-.019-.462.13-.611.135-.134.3-.349.45-.524.149-.174.199-.299.299-.498.1-.2.05-.374-.025-.524-.075-.15-.675-1.623-.925-2.221-.244-.588-.492-.507-.675-.516-.174-.008-.374-.01-.574-.01-.2 0-.525.075-.8.374-.275.299-1.05 1.023-1.05 2.494s1.075 2.893 1.225 3.093c.15.2 2.11 3.224 5.116 4.522.715.309 1.273.494 1.707.632.717.228 1.37.196 1.885.119.574-.085 1.772-.724 2.022-1.422.25-.698.25-1.297.175-1.422-.075-.125-.275-.2-.575-.349z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-1">WhatsApp Me</h4>
+                <p className="text-gray-400 text-sm group-hover:text-emerald-400 transition-colors">
+                  {siteConfig.whatsapp}
+                </p>
+              </div>
+            </a>
 
             {/* Location Card */}
             <div className="flex gap-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all duration-300">
@@ -73,7 +89,7 @@ export default function ContactDetail() {
               <div>
                 <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-1">Location</h4>
                 <p className="text-gray-400 text-sm">
-                  Delhi, India
+                  {siteConfig.location}
                 </p>
               </div>
             </div>

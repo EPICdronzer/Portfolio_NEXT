@@ -330,7 +330,7 @@ export default function SingleServiceDetail({ serviceId }) {
                       }`}
                     >
                       <span>{srv.name}</span>
-                      <span className="w-6 h-6 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] text-gray-500 flex items-center justify-center font-bold">
+                      <span className="w-6 h-6 rounded-full bg-zinc-900 border border-zinc-800 text-sm text-gray-500 flex items-center justify-center font-bold">
                         {srv.count}
                       </span>
                     </Link>
@@ -368,7 +368,7 @@ export default function SingleServiceDetail({ serviceId }) {
                   Sign Up
                 </button>
               </form>
-              <p className="text-[10px] text-gray-600 mt-4 leading-normal">
+              <p className="text-sm text-gray-600 mt-4 leading-normal">
                 By signing up you agree to our{" "}
                 <Link href="/privacy" className="text-gray-400 hover:underline">
                   Privacy Policy

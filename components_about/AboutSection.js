@@ -216,7 +216,7 @@ export default function AboutSection() {
                   </svg>
                   <div>
                     <p className="text-white text-xs font-bold leading-none">50+</p>
-                    <p className="text-gray-400 text-[10px] leading-none mt-0.5">Projects Done</p>
+                    <p className="text-gray-400 text-sm leading-none mt-0.5">Projects Done</p>
                   </div>
                 </div>
               </div>

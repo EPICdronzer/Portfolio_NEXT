@@ -152,7 +152,7 @@ export default function BlogDetail() {
                     <Image src={post.image} alt={post.title} fill className={`object-cover ${post.imgPos}`} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-[9px] font-bold tracking-widest uppercase text-emerald-400">{post.category}</span>
+                    <span className="text-sm font-bold tracking-widest uppercase text-emerald-400">{post.category}</span>
                     <h3 className="text-white font-bold text-sm leading-tight line-clamp-2 mt-0.5">{post.title}</h3>
                   </div>
                   {/* Chevron */}
@@ -174,7 +174,7 @@ export default function BlogDetail() {
                     <div className="relative w-full h-44 rounded-xl overflow-hidden mb-4">
                       <Image src={post.image} alt={post.title} fill className={`object-cover ${post.imgPos}`} />
                     </div>
-                    <div className="flex items-center gap-3 text-[10px] text-gray-500 mb-3 flex-wrap">
+                    <div className="flex items-center gap-3 text-sm text-gray-500 mb-3 flex-wrap">
                       <span>{post.date}</span>
                       <span className="w-1 h-1 rounded-full bg-zinc-700" />
                       <span>{post.readTime}</span>
@@ -204,7 +204,7 @@ export default function BlogDetail() {
                       fill
                       className={`object-cover ${post.imgPos} group-hover:scale-105 transition-transform duration-700`}
                     />
-                    <span className="absolute top-4 left-4 z-20 text-[10px] font-extrabold tracking-widest uppercase bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1 rounded-full backdrop-blur-sm">
+                    <span className="absolute top-4 left-4 z-20 text-sm font-extrabold tracking-widest uppercase bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1 rounded-full backdrop-blur-sm">
                       {post.category}
                     </span>
                   </div>

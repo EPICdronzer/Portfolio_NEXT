@@ -47,14 +47,14 @@ export default function Hero() {
               Hello,
             </span>
             <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-white mt-3 mb-4 leading-[1.1] tracking-tight">
-              I Am Harsh<span className="text-emerald-400">.</span>
+              I am Harsh<span className="text-emerald-400">.</span>
             </h1>
             <h2 className="text-lg md:text-xl lg:text-2xl font-bold tracking-widest text-emerald-400 uppercase">
               Web Developer
             </h2>
 
             <p className="text-gray-400 text-base md:text-lg leading-relaxed mt-6 mb-10 max-w-lg font-light">
-              Crafting premium digital experiences from Bengaluru. Blending desi aesthetics with modern technology to build scalable solutions for the next billion users.
+              Building refined digital experiences from Delhi where culture, ambition, and technology collide. Creating scalable products with modern engineering and a distinctly Indian design sensibility for millions of users.
             </p>
 
             <div>
