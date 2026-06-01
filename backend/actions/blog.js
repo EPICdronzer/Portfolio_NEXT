@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import connect from "@/backend/dbconfig/config";
 import Blog from "@/backend/models/blog";
 
@@ -44,6 +45,11 @@ export async function addBlog(data) {
       content:  data.content || "",
       order:    count,
     });
+    
+    // Clear cache on Vercel
+    revalidatePath("/blog");
+    revalidatePath("/admin/settings");
+    
     return { success: true, blog: serializeBlog(blog) };
   } catch (error) {
     console.error("addBlog error:", error);
@@ -85,6 +91,11 @@ export async function updateBlog(id, data) {
 
     const blog = await Blog.findByIdAndUpdate(id, updateDoc, { new: true });
     if (!blog) return { success: false, error: "Blog not found" };
+    
+    // Clear cache on Vercel
+    revalidatePath("/blog");
+    revalidatePath("/admin/settings");
+    
     return { success: true, blog: serializeBlog(blog) };
   } catch (error) {
     console.error("updateBlog error:", error);
@@ -97,6 +108,11 @@ export async function deleteBlog(id) {
   try {
     await connect();
     await Blog.findByIdAndDelete(id);
+    
+    // Clear cache on Vercel
+    revalidatePath("/blog");
+    revalidatePath("/admin/settings");
+    
     return { success: true };
   } catch (error) {
     console.error("deleteBlog error:", error);

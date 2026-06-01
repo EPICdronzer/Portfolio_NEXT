@@ -4,6 +4,8 @@ import PortfolioHero from "@/components_portfolio/PortfolioHero";
 import PortfolioDetail from "@/components_portfolio/PortfolioDetail";
 import { getPortfolios } from "@/backend/actions/portfolio";
 
+export const revalidate = 0; // Don't cache - always fetch fresh data
+
 export const metadata = {
   title: "Portfolio | Harsh Vashishth - Web Developer",
   description:

@@ -13,6 +13,8 @@ import { getExperiences } from "@/backend/actions/experience";
 import { getPortfolios } from "@/backend/actions/portfolio";
 import { getBlogs } from "@/backend/actions/blog";
 
+export const revalidate = 0; // Don't cache - always fetch fresh data
+
 export const metadata = {
   title: "Harsh Vashishth - Creative Portfolio",
   description: "Modern portfolio for Aliza, Fashion Designer.",

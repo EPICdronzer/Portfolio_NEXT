@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import connect from "@/backend/dbconfig/config";
 import Experience from "@/backend/models/experience";
 
@@ -52,6 +53,11 @@ export async function addExperience(data) {
     });
     const serialized = serializeExp(experience);
     serialized.period = buildPeriod(experience);
+    
+    // Clear cache on Vercel
+    revalidatePath("/about");
+    revalidatePath("/admin/settings");
+    
     return { success: true, experience: serialized };
   } catch (error) {
     console.error("addExperience error:", error);
@@ -81,6 +87,11 @@ export async function updateExperience(id, data) {
     if (!experience) return { success: false, error: "Experience not found" };
     const serialized = serializeExp(experience);
     serialized.period = buildPeriod(experience);
+    
+    // Clear cache on Vercel
+    revalidatePath("/about");
+    revalidatePath("/admin/settings");
+    
     return { success: true, experience: serialized };
   } catch (error) {
     console.error("updateExperience error:", error);
@@ -93,6 +104,11 @@ export async function deleteExperience(id) {
   try {
     await connect();
     await Experience.findByIdAndDelete(id);
+    
+    // Clear cache on Vercel
+    revalidatePath("/about");
+    revalidatePath("/admin/settings");
+    
     return { success: true };
   } catch (error) {
     console.error("deleteExperience error:", error);

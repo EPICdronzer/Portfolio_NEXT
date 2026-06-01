@@ -193,7 +193,7 @@ export default function Footer() {
       <div className="border-t border-zinc-800 px-6 md:px-12 lg:px-24 py-5 relative">
         <div className="max-w-7xl mx-auto flex items-center justify-center">
           <p className="text-gray-500 text-xs text-center">
-            Copyright © 2025{" "}
+            Copyright © 2026{" "}
             <span className="text-white font-semibold">Harsh Vashishth</span>
             . All rights reserved.
           </p>

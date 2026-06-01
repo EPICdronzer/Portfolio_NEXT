@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import connect from "@/backend/dbconfig/config";
 import Service from "@/backend/models/service";
 
@@ -41,6 +42,11 @@ export async function addService(data) {
       images,
       order:    count,
     });
+    
+    // Clear cache on Vercel so new data appears immediately
+    revalidatePath("/service");
+    revalidatePath("/admin/settings");
+    
     return { success: true, service: serializeService(service) };
   } catch (error) {
     console.error("addService error:", error);
@@ -79,6 +85,11 @@ export async function updateService(id, data) {
 
     const service = await Service.findByIdAndUpdate(id, updateDoc, { new: true });
     if (!service) return { success: false, error: "Service not found" };
+    
+    // Clear cache on Vercel so updated data appears immediately
+    revalidatePath("/service");
+    revalidatePath("/admin/settings");
+    
     return { success: true, service: serializeService(service) };
   } catch (error) {
     console.error("updateService error:", error);
@@ -91,6 +102,11 @@ export async function deleteService(id) {
   try {
     await connect();
     await Service.findByIdAndDelete(id);
+    
+    // Clear cache on Vercel so deletion appears immediately
+    revalidatePath("/service");
+    revalidatePath("/admin/settings");
+    
     return { success: true };
   } catch (error) {
     console.error("deleteService error:", error);

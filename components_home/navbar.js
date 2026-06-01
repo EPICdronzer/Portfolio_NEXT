@@ -67,7 +67,8 @@ export default function Navbar() {
 
         {/* Resume Button */}
         <a
-          href="#resume"
+          href="/resume.pdf"
+          download="Harsh_Vashishth_Resume.pdf"
           className="hidden lg:inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-5 py-2.5 rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-400/30 transform hover:-translate-y-0.5 transition-all duration-300 group text-sm"
         >
           Resume
@@ -106,7 +107,8 @@ export default function Navbar() {
             </Link>
           ))}
           <a
-            href="#resume"
+            href="/resume.pdf"
+            download="Harsh_Vashishth_Resume.pdf"
             onClick={() => setIsMobileMenuOpen(false)}
             className="mt-2 inline-flex items-center justify-center gap-2 bg-emerald-500 text-black font-bold py-3 rounded-full transition-all duration-200"
           >

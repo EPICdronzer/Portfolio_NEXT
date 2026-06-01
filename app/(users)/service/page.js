@@ -4,6 +4,8 @@ import ServiceHero from "@/components_service/ServiceHero";
 import ServiceDetail from "@/components_service/ServiceDetail";
 import { getServices } from "@/backend/actions/service";
 
+export const revalidate = 0; // Don't cache - always fetch fresh data
+
 export const metadata = {
   title: "Services | Harsh Vashishth - Web Developer",
   description:

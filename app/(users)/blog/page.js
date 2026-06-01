@@ -4,6 +4,8 @@ import BlogHero from "@/components_blog/BlogHero";
 import BlogDetail from "@/components_blog/BlogDetail";
 import { getBlogs } from "@/backend/actions/blog";
 
+export const revalidate = 0; // Don't cache - always fetch fresh data
+
 export const metadata = {
   title: "Blog | Harsh Vashishth - Web Developer",
   description:

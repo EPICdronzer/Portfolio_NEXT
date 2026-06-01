@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import connect from "@/backend/dbconfig/config";
 import Portfolio from "@/backend/models/portfolio";
 
@@ -53,6 +54,11 @@ export async function addPortfolio(data) {
       href:    data.href    || "#",
       order:   count,
     });
+    
+    // Clear cache on Vercel
+    revalidatePath("/portfolio");
+    revalidatePath("/admin/settings");
+    
     return { success: true, portfolio: serializePortfolio(portfolio) };
   } catch (error) {
     console.error("addPortfolio error:", error);
@@ -102,6 +108,11 @@ export async function updatePortfolio(id, data) {
 
     const portfolio = await Portfolio.findByIdAndUpdate(id, updateDoc, { new: true });
     if (!portfolio) return { success: false, error: "Portfolio not found" };
+    
+    // Clear cache on Vercel
+    revalidatePath("/portfolio");
+    revalidatePath("/admin/settings");
+    
     return { success: true, portfolio: serializePortfolio(portfolio) };
   } catch (error) {
     console.error("updatePortfolio error:", error);
@@ -114,6 +125,11 @@ export async function deletePortfolio(id) {
   try {
     await connect();
     await Portfolio.findByIdAndDelete(id);
+    
+    // Clear cache on Vercel
+    revalidatePath("/portfolio");
+    revalidatePath("/admin/settings");
+    
     return { success: true };
   } catch (error) {
     console.error("deletePortfolio error:", error);
