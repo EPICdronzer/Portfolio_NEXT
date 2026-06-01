@@ -251,8 +251,7 @@ export default function Services({ initialServices }) {
                     {service.icon}
                   </div>
                   <h3 className="text-white font-bold text-base mb-2">{service.title}</h3>
-                  <p className="text-gray-400 text-xs leading-relaxed mb-5">{service.desc}</p>
-                  <div className="inline-flex items-center gap-2 text-gray-400 group-hover:text-amber-400 text-xs font-semibold transition-colors duration-200 mt-auto">
+                 <div className="inline-flex items-center gap-2 text-gray-400 group-hover:text-amber-400 text-xs font-semibold transition-colors duration-200 mt-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                     Learn More
                   </div>
@@ -272,7 +271,6 @@ export default function Services({ initialServices }) {
                     {service.icon}
                   </div>
                   <h3 className="text-white font-bold text-lg mb-3">{service.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed mb-6">{service.desc}</p>
                   <div className="inline-flex items-center gap-2 text-gray-400 group-hover:text-amber-400 text-sm font-semibold transition-colors duration-200 mt-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                     Learn More
