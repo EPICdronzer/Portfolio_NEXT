@@ -93,25 +93,35 @@ export default function Blog({ initialBlogs }) {
           <>
             {/* Mobile: horizontal scroll carousel */}
             <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-6 px-6 snap-x snap-mandatory scrollbar-hide">
-              {displayBlogs.map((post) => (
-                <Link
-                  key={post._id || post.id}
-                  href={post.href || `/blog/${post.slug || post._id || post.id}`}
-                  className="snap-start flex-shrink-0 w-[75vw] max-w-[280px] group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300"
-                >
-                  <div className="relative h-40 overflow-hidden">
-                    <Image src={post.image} alt={post.title} fill className={`object-cover ${post.imgPos} group-hover:scale-105 transition-transform duration-500`} />
-                  </div>
-                  <div className="p-4">
-                    <span className="inline-block text-sm text-gray-500 border border-zinc-700 px-2 py-0.5 rounded-full mb-2 font-medium">{post.date}</span>
-                    <h3 className="text-white font-bold text-sm leading-snug mb-2 group-hover:text-emerald-400 transition-colors duration-200 line-clamp-2">{post.title}</h3>
-                    <span className="inline-flex items-center gap-1 text-gray-500 text-xs font-semibold">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                      Read
-                    </span>
-                  </div>
-                </Link>
-              ))}
+              {displayBlogs.map((post) => {
+                const hasImage = post.image && post.image !== "" && post.image !== "/blog_thumbnails.png";
+                return (
+                  <Link
+                    key={post._id || post.id}
+                    href={post.href || `/blog/${post.slug || post._id || post.id}`}
+                    className="snap-start flex-shrink-0 w-[75vw] max-w-[280px] group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300"
+                  >
+                    <div className="relative h-40 overflow-hidden">
+                      {hasImage ? (
+                        <Image src={post.image} alt={post.title} fill className={`object-cover ${post.imgPos} group-hover:scale-105 transition-transform duration-500`} />
+                      ) : (
+                        <div className="w-full h-full bg-zinc-900/50 flex flex-col items-center justify-center gap-2">
+                          <span className="text-2xl text-gray-700">🖼️</span>
+                          <span className="text-gray-600 text-xs font-semibold">No photo uploaded</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <span className="inline-block text-sm text-gray-500 border border-zinc-700 px-2 py-0.5 rounded-full mb-2 font-medium">{post.date}</span>
+                      <h3 className="text-white font-bold text-sm leading-snug mb-2 group-hover:text-emerald-400 transition-colors duration-200 line-clamp-2">{post.title}</h3>
+                      <span className="inline-flex items-center gap-1 text-gray-500 text-xs font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                        Read
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Desktop: grid with side arrows */}
@@ -126,25 +136,35 @@ export default function Blog({ initialBlogs }) {
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
                 </button>
                 <div className="grid grid-cols-3 gap-6 flex-grow">
-                  {visible.map((post) => (
-                    <Link
-                      key={post._id || post.id}
-                      href={post.href || `/blog/${post.slug || post._id || post.id}`}
-                      className="group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30"
-                    >
-                      <div className="relative h-52 overflow-hidden">
-                        <Image src={post.image} alt={post.title} fill className={`object-cover ${post.imgPos} group-hover:scale-105 transition-transform duration-500`} />
-                      </div>
-                      <div className="p-6">
-                        <span className="inline-block text-xs text-gray-500 border border-zinc-700 px-3 py-1 rounded-full mb-4 font-medium">{post.date}</span>
-                        <h3 className="text-white font-bold text-base leading-snug mb-4 group-hover:text-emerald-400 transition-colors duration-200">{post.title}</h3>
-                        <span className="inline-flex items-center gap-2 text-gray-500 hover:text-white text-sm font-semibold transition-colors duration-200">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                          Post Details
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
+                  {visible.map((post) => {
+                    const hasImage = post.image && post.image !== "" && post.image !== "/blog_thumbnails.png";
+                    return (
+                      <Link
+                        key={post._id || post.id}
+                        href={post.href || `/blog/${post.slug || post._id || post.id}`}
+                        className="group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30"
+                      >
+                        <div className="relative h-52 overflow-hidden">
+                          {hasImage ? (
+                            <Image src={post.image} alt={post.title} fill className={`object-cover ${post.imgPos} group-hover:scale-105 transition-transform duration-500`} />
+                          ) : (
+                            <div className="w-full h-full bg-zinc-900/50 flex flex-col items-center justify-center gap-2">
+                              <span className="text-2xl text-gray-700">🖼️</span>
+                              <span className="text-gray-600 text-xs font-semibold">No photo uploaded</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-6">
+                          <span className="inline-block text-xs text-gray-500 border border-zinc-700 px-3 py-1 rounded-full mb-4 font-medium">{post.date}</span>
+                          <h3 className="text-white font-bold text-base leading-snug mb-4 group-hover:text-emerald-400 transition-colors duration-200">{post.title}</h3>
+                          <span className="inline-flex items-center gap-2 text-gray-500 hover:text-white text-sm font-semibold transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                            Post Details
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
                 <button
                   onClick={() => setCurrent((c) => Math.min(totalPages - 1, c + 1))}

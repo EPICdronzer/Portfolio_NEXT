@@ -16,6 +16,40 @@ dns.resolveTxt = (hostname, callback) => googleResolver.resolveTxt(hostname, cal
 dns.resolve = (...args) => googleResolver.resolve(...args);
 dns.resolve4 = (hostname, ...rest) => googleResolver.resolve4(hostname, ...rest);
 dns.resolve6 = (hostname, ...rest) => googleResolver.resolve6(hostname, ...rest);
+
+if (dns.promises) {
+    dns.promises.resolveSrv = (hostname) => new Promise((resolve, reject) => {
+        googleResolver.resolveSrv(hostname, (err, addresses) => {
+            if (err) reject(err);
+            else resolve(addresses);
+        });
+    });
+    dns.promises.resolveTxt = (hostname) => new Promise((resolve, reject) => {
+        googleResolver.resolveTxt(hostname, (err, addresses) => {
+            if (err) reject(err);
+            else resolve(addresses);
+        });
+    });
+    dns.promises.resolve = (hostname, rrtype) => new Promise((resolve, reject) => {
+        googleResolver.resolve(hostname, rrtype, (err, addresses) => {
+            if (err) reject(err);
+            else resolve(addresses);
+        });
+    });
+    dns.promises.resolve4 = (hostname, options) => new Promise((resolve, reject) => {
+        googleResolver.resolve4(hostname, options, (err, addresses) => {
+            if (err) reject(err);
+            else resolve(addresses);
+        });
+    });
+    dns.promises.resolve6 = (hostname, options) => new Promise((resolve, reject) => {
+        googleResolver.resolve6(hostname, options, (err, addresses) => {
+            if (err) reject(err);
+            else resolve(addresses);
+        });
+    });
+}
+
 // Also set the default servers for anything else
 dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
 

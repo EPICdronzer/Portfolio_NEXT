@@ -135,6 +135,7 @@ export default function PortfolioDetail({ initialPortfolios }) {
         <div className="flex flex-col gap-4 md:hidden">
           {paginated.map((project) => {
             const isOpen = expandedId === project.id;
+            const hasImage = project.image && project.image !== "" && project.image !== "/portfolio_screenshots.png";
             return (
               <div
                 key={project.id}
@@ -148,13 +149,19 @@ export default function PortfolioDetail({ initialPortfolios }) {
                 >
                   {/* Thumbnail */}
                   <div className="relative flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-white/10">
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      sizes="64px"
-                      className={`object-cover ${project.imgPos} transition-transform duration-500 group-hover:scale-110`}
-                    />
+                    {hasImage ? (
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        sizes="64px"
+                        className={`object-cover ${project.imgPos} transition-transform duration-500 group-hover:scale-110`}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-zinc-900/50 flex items-center justify-center text-[10px]">
+                        🖼️
+                      </div>
+                    )}
                   </div>
 
                   {/* Title + category */}
@@ -185,14 +192,23 @@ export default function PortfolioDetail({ initialPortfolios }) {
                   <div className="px-4 pb-5 space-y-4">
                     {/* Full-size image */}
                     <div className="relative w-full h-52 rounded-2xl overflow-hidden border border-white/5">
-                      <Image
-                        src={project.image}
-                        alt={project.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw"
-                        className={`object-cover ${project.imgPos}`}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      {hasImage ? (
+                        <>
+                          <Image
+                            src={project.image}
+                            alt={project.title}
+                            fill
+                            sizes="(max-width: 768px) 100vw"
+                            className={`object-cover ${project.imgPos}`}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        </>
+                      ) : (
+                        <div className="w-full h-full bg-zinc-900/50 flex flex-col items-center justify-center gap-2">
+                          <span className="text-2xl text-gray-700">🖼️</span>
+                          <span className="text-gray-600 text-xs font-semibold">No photo uploaded</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Description */}
@@ -219,6 +235,7 @@ export default function PortfolioDetail({ initialPortfolios }) {
         <div className="hidden md:block columns-2 lg:columns-3 gap-6 space-y-6">
           {paginated.map((project) => {
             const isActive = tappedCard === project.id;
+            const hasImage = project.image && project.image !== "" && project.image !== "/portfolio_screenshots.png";
             return (
               <div
                 key={project.id}
@@ -227,18 +244,26 @@ export default function PortfolioDetail({ initialPortfolios }) {
                 style={{ aspectRatio: "4/3" }}
               >
                 {/* Image */}
-                <Image
-                  src={project.image}
-                  alt={project.title}
-                  fill
-                  sizes="(max-width: 1024px) 50vw, 33vw"
-                  className={`object-cover opacity-90 transition-all duration-700 ease-out ${
-                    isActive ? "scale-110 grayscale-0" : "grayscale group-hover:scale-110 group-hover:grayscale-0"
-                  } ${project.imgPos}`}
-                />
-
-                {/* Subtle base gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                {hasImage ? (
+                  <>
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      sizes="(max-width: 1024px) 50vw, 33vw"
+                      className={`object-cover opacity-90 transition-all duration-700 ease-out ${
+                        isActive ? "scale-110 grayscale-0" : "grayscale group-hover:scale-110 group-hover:grayscale-0"
+                      } ${project.imgPos}`}
+                    />
+                    {/* Subtle base gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  </>
+                ) : (
+                  <div className="w-full h-full bg-[#111] flex flex-col items-center justify-center gap-3">
+                    <span className="text-3xl text-gray-700">🖼️</span>
+                    <span className="text-gray-600 text-sm font-semibold">No photo uploaded</span>
+                  </div>
+                )}
 
                 {/* Hover / tap overlay */}
                 <div

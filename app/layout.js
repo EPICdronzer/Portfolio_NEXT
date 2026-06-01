@@ -1,5 +1,7 @@
 import { Outfit } from "next/font/google";
 import "./globals.css";
+import { ToastProvider } from "@/app/context/ToastContext";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -15,7 +17,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={outfit.variable}>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <ToastProvider>
+          {children}
+          <FloatingWhatsApp />
+        </ToastProvider>
+      </body>
     </html>
   );
 }

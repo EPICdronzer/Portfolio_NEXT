@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { siteConfig } from "@/app/config";
 
 const slowGrowStyle = `
   @keyframes slowGrow {
@@ -59,7 +60,9 @@ export default function Hero() {
 
             <div>
               <a
-                href="#contact"
+                href={`https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent("Hi Harsh, I would like to hire you for a project!")}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-8 py-4 rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transform hover:-translate-y-0.5 transition-all duration-300 group"
               >
                 Hire Me

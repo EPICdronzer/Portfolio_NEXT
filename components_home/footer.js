@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { siteConfig } from "@/app/config";
+import { useToast } from "@/app/context/ToastContext";
 
 const socialLinks = [
   {
@@ -28,11 +29,21 @@ const socialLinks = [
 ];
 
 export default function Footer() {
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const { addToast } = useToast();
 
   const handleSubscribe = (e) => {
     e.preventDefault();
-    setEmail("");
+    if (!name.trim()) {
+      addToast("Please enter your name.", "error");
+      return;
+    }
+    
+    addToast("Redirecting to WhatsApp...", "success");
+    const message = `Hi Harsh, I would like to subscribe to your newsletter. My name is ${name}.`;
+    const whatsappUrl = `https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+    setName("");
   };
 
   return (
@@ -68,7 +79,7 @@ export default function Footer() {
           Send me a message and make something together.
         </h3>
         <a
-          href="#contact-form"
+          href="/contact"
           className="relative z-10 inline-flex items-center gap-2 bg-[#1a1a1a] hover:bg-zinc-800 text-white font-bold px-7 py-3.5 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl whitespace-nowrap group"
         >
           Contact Us
@@ -156,10 +167,10 @@ export default function Footer() {
             </p>
             <form onSubmit={handleSubscribe} className="flex gap-2">
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email Address *"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter Name *"
                 required
                 className="flex-grow bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 text-sm px-4 py-2.5 focus:outline-none focus:border-emerald-500 transition-colors duration-200"
               />

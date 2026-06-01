@@ -14,7 +14,9 @@ const BlogSchema = new mongoose.Schema({
   // Additional inline images
   images:  [{ type: String }],
 
-  content: { type: String, default: "" },
+  content:     { type: String, default: "" },
+  // Optional code snippet displayed on the blog detail page
+  codeSnippet: { type: String, default: "" },
   order:   { type: Number, default: 0 },
 }, { timestamps: true });
 

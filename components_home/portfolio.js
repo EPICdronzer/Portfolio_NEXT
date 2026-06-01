@@ -107,43 +107,67 @@ export default function Portfolio({ initialPortfolios }) {
           <>
             {/* Mobile: horizontal scroll carousel */}
             <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-6 px-6 snap-x snap-mandatory scrollbar-hide mb-6">
-              {displayProjects.map((project) => (
-                <Link
-                  key={project._id || project.id}
-                  href={project.href || `/portfolio/${project.slug || project._id || project.id}`}
-                  className="snap-start flex-shrink-0 w-[75vw] max-w-[280px] group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 cursor-pointer"
-                >
-                  <div className="relative h-44 overflow-hidden">
-                    <Image src={project.image} alt={project.title} fill className={`object-cover ${project.imgPos} group-hover:scale-105 transition-transform duration-500`} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-transparent to-transparent opacity-70" />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-white font-bold text-sm leading-snug mb-1 group-hover:text-emerald-400 transition-colors duration-200 line-clamp-2">{project.title}</h3>
-                    <p className="text-gray-500 text-xs">{project.category}</p>
-                  </div>
-                </Link>
-              ))}
+              {displayProjects.map((project) => {
+                const hasImage = project.image && project.image !== "" && project.image !== "/portfolio_screenshots.png";
+                return (
+                  <Link
+                    key={project._id || project.id}
+                    href={project.href || `/portfolio/${project.slug || project._id || project.id}`}
+                    className="snap-start flex-shrink-0 w-[75vw] max-w-[280px] group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 cursor-pointer"
+                  >
+                    <div className="relative h-44 overflow-hidden">
+                      {hasImage ? (
+                        <>
+                          <Image src={project.image} alt={project.title} fill className={`object-cover ${project.imgPos} group-hover:scale-105 transition-transform duration-500`} />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-transparent to-transparent opacity-70" />
+                        </>
+                      ) : (
+                        <div className="w-full h-full bg-zinc-900/50 flex flex-col items-center justify-center gap-2">
+                          <span className="text-2xl text-gray-700">🖼️</span>
+                          <span className="text-gray-600 text-xs font-semibold">No photo uploaded</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-white font-bold text-sm leading-snug mb-1 group-hover:text-emerald-400 transition-colors duration-200 line-clamp-2">{project.title}</h3>
+                      <p className="text-gray-500 text-xs">{project.category}</p>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Desktop: 3-column grid + pagination */}
             <div className="hidden md:block">
               <div className="grid grid-cols-3 gap-6 mb-10">
-                {visible.map((project) => (
-                  <Link
-                    key={project._id || project.id}
-                    href={project.href || `/portfolio/${project.slug || project._id || project.id}`}
-                    className="group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40"
-                  >
-                    <div className="relative h-72 overflow-hidden">
-                      <Image src={project.image} alt={project.title} fill className={`object-cover ${project.imgPos} group-hover:scale-105 transition-transform duration-500`} />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-transparent to-transparent opacity-70" />
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-white font-bold text-base leading-snug mb-1 group-hover:text-emerald-400 transition-colors duration-200">{project.title}</h3>
-                      <p className="text-gray-500 text-sm">{project.category}</p>
-                    </div>
-                  </Link>
-                ))}
+                {visible.map((project) => {
+                  const hasImage = project.image && project.image !== "" && project.image !== "/portfolio_screenshots.png";
+                  return (
+                    <Link
+                      key={project._id || project.id}
+                      href={project.href || `/portfolio/${project.slug || project._id || project.id}`}
+                      className="group block bg-[#1a1a1a] border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40"
+                    >
+                      <div className="relative h-72 overflow-hidden">
+                        {hasImage ? (
+                          <>
+                            <Image src={project.image} alt={project.title} fill className={`object-cover ${project.imgPos} group-hover:scale-105 transition-transform duration-500`} />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-transparent to-transparent opacity-70" />
+                          </>
+                        ) : (
+                          <div className="w-full h-full bg-zinc-900/50 flex flex-col items-center justify-center gap-2">
+                            <span className="text-2xl text-gray-700">🖼️</span>
+                            <span className="text-gray-600 text-xs font-semibold">No photo uploaded</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-6">
+                        <h3 className="text-white font-bold text-base leading-snug mb-1 group-hover:text-emerald-400 transition-colors duration-200">{project.title}</h3>
+                        <p className="text-gray-500 text-sm">{project.category}</p>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
               {/* Carousel Nav */}
               {totalPages > 1 && (

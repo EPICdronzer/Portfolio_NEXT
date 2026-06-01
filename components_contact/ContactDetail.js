@@ -2,16 +2,45 @@
 
 import React, { useState } from "react";
 import { siteConfig } from "@/app/config";
+import { useToast } from "@/app/context/ToastContext";
 
 export default function ContactDetail() {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
+  const { addToast } = useToast();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSubmitted(true);
+
+    // Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.name.trim()) {
+      addToast("Please enter your name.", "error");
+      return;
+    }
+    if (!emailRegex.test(formData.email)) {
+      addToast("Please enter a valid email address.", "error");
+      return;
+    }
+    if (!formData.message.trim()) {
+      addToast("Please enter a message.", "error");
+      return;
+    }
+
+    addToast("Redirecting to WhatsApp...", "success");
+
+    const messageText = `*New Contact Message*
+*Name:* ${formData.name}
+*Email:* ${formData.email}
+*Subject:* ${formData.subject || "N/A"}
+*Message:* ${formData.message}`;
+
+    const whatsappUrl = `https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(messageText)}`;
+    
+    // Open in a new tab
+    window.open(whatsappUrl, "_blank");
+
+    // Clear form
     setFormData({ name: "", email: "", subject: "", message: "" });
-    setTimeout(() => setSubmitted(false), 4000);
   };
 
   const handleChange = (e) => {
@@ -79,7 +108,7 @@ export default function ContactDetail() {
             </a>
 
             {/* Location Card */}
-            <div className="flex gap-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all duration-300">
+            {/* <div className="flex gap-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all duration-300">
               <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 flex-shrink-0">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -92,22 +121,13 @@ export default function ContactDetail() {
                   {siteConfig.location}
                 </p>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Form right */}
           <div className="lg:col-span-7 bg-[#111] border border-white/5 rounded-3xl p-8 md:p-10 shadow-2xl relative">
             <h3 className="text-sm font-bold tracking-widest text-emerald-400 uppercase mb-2">Message Me</h3>
             <h2 className="text-3xl font-extrabold text-white mb-8">Send A Message</h2>
-
-            {submitted && (
-              <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold flex items-center gap-2">
-                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Thank you! Your message was sent successfully.
-              </div>
-            )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

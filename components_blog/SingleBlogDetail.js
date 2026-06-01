@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { siteConfig } from "@/app/config";
+import { useToast } from "@/app/context/ToastContext";
 
 /* ─── Fallback sidebar services (shown when DB has none) ─── */
 const FALLBACK_SERVICES = [
@@ -15,7 +17,8 @@ const FALLBACK_SERVICES = [
 
 export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
   const [formData, setFormData]   = useState({ name: "", email: "", comment: "" });
-  const [submitted, setSubmitted] = useState(false);
+  const [newsletterName, setNewsletterName] = useState("");
+  const { addToast } = useToast();
 
   /* ── Sidebar services ── */
   const sidebarServices =
@@ -25,9 +28,47 @@ export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    
+    // Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.name.trim()) {
+      addToast("Please enter your name.", "error");
+      return;
+    }
+    if (!emailRegex.test(formData.email)) {
+      addToast("Please enter a valid email address.", "error");
+      return;
+    }
+    if (!formData.comment.trim()) {
+      addToast("Please enter a comment.", "error");
+      return;
+    }
+
+    addToast("Redirecting to WhatsApp...", "success");
+
+    const messageText = `*New Blog Comment on ${title}*
+*Name:* ${formData.name}
+*Email:* ${formData.email}
+*Comment:* ${formData.comment}`;
+
+    const whatsappUrl = `https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(messageText)}`;
+    window.open(whatsappUrl, "_blank");
+
     setFormData({ name: "", email: "", comment: "" });
-    setTimeout(() => setSubmitted(false), 4500);
+  };
+
+  const handleNewsletterSubmit = (e) => {
+    e.preventDefault();
+    if (!newsletterName.trim()) {
+      addToast("Please enter your name.", "error");
+      return;
+    }
+
+    addToast("Redirecting to WhatsApp...", "success");
+    const msg = `Hi Harsh, I would like to subscribe to your newsletter. My name is ${newsletterName}.`;
+    const whatsappUrl = `https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(msg)}`;
+    window.open(whatsappUrl, "_blank");
+    setNewsletterName("");
   };
 
   /* ═══════════════════════════════════════
@@ -66,7 +107,8 @@ export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
   ═══════════════════════════════════════ */
   const title    = initialBlog.title   || "Untitled Post";
   const date     = initialBlog.date    || new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "2-digit" });
-  const image    = initialBlog.image   || "/my.png";
+  const image    = initialBlog.image;
+  const hasImage = image && image !== "" && image !== "/my.png" && image !== "/blog_thumbnails.png";
   const category = initialBlog.category|| "Development";
   const author   = initialBlog.author  || "Harsh Vashishth";
   const readTime = initialBlog.readTime|| "4 min read";
@@ -94,11 +136,18 @@ export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
 
             {/* Banner image */}
             <div className="relative w-full h-[320px] sm:h-[420px] rounded-3xl overflow-hidden border border-white/5">
-              <img
-                src={image}
-                alt={title}
-                className="w-full h-full object-cover"
-              />
+              {hasImage ? (
+                <img
+                  src={image}
+                  alt={title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-zinc-900/50 flex flex-col items-center justify-center gap-3 border border-white/10 rounded-3xl">
+                  <span className="text-4xl text-gray-600">🖼️</span>
+                  <span className="text-gray-500 text-sm font-semibold tracking-wide">No photo uploaded</span>
+                </div>
+              )}
             </div>
 
             {/* Meta tags */}
@@ -142,12 +191,6 @@ export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
               <p className="text-[#a0a0a0] text-sm mb-6 font-light">
                 Your email address will not be published. Required fields are marked *
               </p>
-
-              {submitted && (
-                <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold">
-                  ✓ Comment submitted! It will appear once approved by the administrator.
-                </div>
-              )}
 
               <form onSubmit={handleCommentSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -231,32 +274,70 @@ export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
             {/* Newsletter widget */}
             <div className="bg-[#181818] border border-white/5 rounded-2xl p-6">
               <h4 className="text-white font-bold text-sm tracking-wider uppercase mb-4 relative pb-3">
-                Newsletter
+                Whatsapp Me
                 <span className="absolute bottom-0 left-0 w-8 h-[2px] bg-emerald-500" />
               </h4>
-              <p className="text-xs text-[#a0a0a0] leading-relaxed mb-5">
-                Subscribe to get the latest articles & updates!
-              </p>
+              
               <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  alert("Successfully signed up!");
-                }}
+                onSubmit={handleNewsletterSubmit}
                 className="space-y-3"
               >
                 <input
-                  type="email"
+                  type="text"
                   required
-                  placeholder="Email Address"
+                  value={newsletterName}
+                  onChange={(e) => setNewsletterName(e.target.value)}
+                  placeholder="Enter Name"
                   className="w-full bg-[#111] border border-zinc-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-500 text-white"
                 />
                 <button
                   type="submit"
                   className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3.5 rounded-xl text-xs transition-colors"
                 >
-                  Sign Up
+                  Send
                 </button>
+                <p className="text-sm text-gray-600 mt-4 leading-normal">
+                By click on send you agree to our{" "}
+                <Link href="/privacy" className="text-gray-400 hover:underline">
+                  Privacy Policy
+                </Link>
+              </p>
               </form>
+            </div>
+
+            {/* Social Media widget */}
+            <div className="bg-[#181818] border border-white/5 rounded-2xl p-6">
+              <h4 className="text-white font-bold text-sm tracking-wider uppercase mb-5 relative pb-3">
+                Follow Me
+                <span className="absolute bottom-0 left-0 w-8 h-[2px] bg-emerald-500" />
+              </h4>
+              <div className="grid grid-cols-2 gap-3">
+                {siteConfig.socialLinks.linkedin && siteConfig.socialLinks.linkedin !== "#" && (
+                  <a href={siteConfig.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 hover:bg-zinc-800 transition-all text-xs font-semibold text-gray-300 hover:text-white">
+                    <span className="text-sky-400">🔗</span> LinkedIn
+                  </a>
+                )}
+                {siteConfig.socialLinks.github && siteConfig.socialLinks.github !== "#" && (
+                  <a href={siteConfig.socialLinks.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 hover:bg-zinc-800 transition-all text-xs font-semibold text-gray-300 hover:text-white">
+                    <span className="text-white">💻</span> GitHub
+                  </a>
+                )}
+                {siteConfig.socialLinks.facebook && siteConfig.socialLinks.facebook !== "#" && (
+                  <a href={siteConfig.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 hover:bg-zinc-800 transition-all text-xs font-semibold text-gray-300 hover:text-white">
+                    <span className="text-blue-500">📘</span> Facebook
+                  </a>
+                )}
+                {siteConfig.socialLinks.pinterest && siteConfig.socialLinks.pinterest !== "#" && (
+                  <a href={siteConfig.socialLinks.pinterest} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 hover:bg-zinc-800 transition-all text-xs font-semibold text-gray-300 hover:text-white">
+                    <span className="text-red-500">📌</span> Pinterest
+                  </a>
+                )}
+                {siteConfig.whatsapp && (
+                  <a href={`https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 hover:bg-zinc-800 transition-all text-xs font-semibold text-gray-300 hover:text-white col-span-2 justify-center">
+                    <span className="text-emerald-400">💬</span> WhatsApp Me
+                  </a>
+                )}
+              </div>
             </div>
 
             {/* Recent posts widget */}

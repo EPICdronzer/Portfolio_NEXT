@@ -41,7 +41,8 @@ export default function SinglePortfolioDetail({ initialPortfolio }) {
   /* ── Normalise fields from MongoDB doc ── */
   const title    = project.title    || "Untitled Project";
   const category = project.category || "Uncategorized";
-  const image    = project.image    || "/portfolio_screenshots.png";
+  const image    = project.image;
+  const hasImage = image && image !== "" && image !== "/portfolio_screenshots.png";
   const imgPos   = project.imgPos   || "object-center";
   const href     = project.href     || "#";
   const desc     = project.desc     || "A premium, thoughtfully crafted project built with modern tools and an eye for quality.";
@@ -68,15 +69,24 @@ export default function SinglePortfolioDetail({ initialPortfolio }) {
 
         {/* Hero Image */}
         <div className="relative w-full h-[340px] md:h-[480px] rounded-3xl overflow-hidden mb-12 shadow-2xl shadow-black/50 border border-white/5">
-          <Image
-            src={image}
-            alt={title}
-            fill
-            sizes="(max-width: 768px) 100vw, 896px"
-            className={`object-cover ${imgPos}`}
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80" />
+          {hasImage ? (
+            <>
+              <Image
+                src={image}
+                alt={title}
+                fill
+                sizes="(max-width: 768px) 100vw, 896px"
+                className={`object-cover ${imgPos}`}
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80" />
+            </>
+          ) : (
+            <div className="w-full h-full bg-zinc-900/50 flex flex-col items-center justify-center gap-3">
+              <span className="text-4xl text-gray-600">🖼️</span>
+              <span className="text-gray-500 text-sm font-semibold tracking-wide">No photo uploaded</span>
+            </div>
+          )}
         </div>
 
         {/* Header */}

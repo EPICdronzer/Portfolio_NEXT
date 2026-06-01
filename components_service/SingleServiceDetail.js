@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { siteConfig } from "@/app/config";
+import { useToast } from "@/app/context/ToastContext";
 
 const allServicesList = [
   { name: "Web Development", id: "web-dev", count: 5 },
@@ -114,14 +116,15 @@ const defaultFallback = (title) => ({
 
 export default function SingleServiceDetail({ serviceId, initialService, initialAllServices }) {
   const [formData, setFormData] = useState({ name: "", email: "", service: serviceId, message: "" });
-  const [submitted, setSubmitted] = useState(false);
-  const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
+  const [newsletterName, setNewsletterName] = useState("");
+  const { addToast } = useToast();
 
   /* ── Only use real DB data ── */
   const currentService = initialService
     ? {
         title: initialService.title,
-        mainImage: "/my.png",
+        mainImage: initialService.image || "",
+        images: initialService.images || [],
         desc1: initialService.desc,
         desc2: "Our " + initialService.title + " services are structured to meet high-performance requirements using modern architectural standards.",
         capabilities: [
@@ -150,9 +153,48 @@ export default function SingleServiceDetail({ serviceId, initialService, initial
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    
+    // Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.name.trim()) {
+      addToast("Please enter your name.", "error");
+      return;
+    }
+    if (!emailRegex.test(formData.email)) {
+      addToast("Please enter a valid email address.", "error");
+      return;
+    }
+    if (!formData.message.trim()) {
+      addToast("Please enter a message.", "error");
+      return;
+    }
+
+    addToast("Redirecting to WhatsApp...", "success");
+
+    const messageText = `*New Project Inquiry for ${currentService.title}*
+*Name:* ${formData.name}
+*Email:* ${formData.email}
+*Service:* ${currentService.title}
+*Message:* ${formData.message}`;
+
+    const whatsappUrl = `https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(messageText)}`;
+    window.open(whatsappUrl, "_blank");
+
     setFormData({ name: "", email: "", service: serviceId, message: "" });
-    setTimeout(() => setSubmitted(false), 4500);
+  };
+
+  const handleNewsletterSubmit = (e) => {
+    e.preventDefault();
+    if (!newsletterName.trim()) {
+      addToast("Please enter your name.", "error");
+      return;
+    }
+
+    addToast("Redirecting to WhatsApp...", "success");
+    const msg = `Hi Harsh, I would like to subscribe to your newsletter. My name is ${newsletterName}.`;
+    const whatsappUrl = `https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(msg)}`;
+    window.open(whatsappUrl, "_blank");
+    setNewsletterName("");
   };
 
   /* ── Service not in DB yet ── */
@@ -193,11 +235,18 @@ export default function SingleServiceDetail({ serviceId, initialService, initial
           <div className="lg:col-span-8 space-y-10">
             {/* Keyboard main picture */}
             <div className="relative w-full h-[320px] sm:h-[420px] rounded-3xl overflow-hidden border border-white/5">
-              <img
-                src="/my.png" // high quality developer image
-                alt={currentService.title}
-                className="w-full h-full object-cover"
-              />
+              {currentService.mainImage && currentService.mainImage !== "" && currentService.mainImage !== "/my.png" ? (
+                <img
+                  src={currentService.mainImage}
+                  alt={currentService.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-zinc-900/50 flex flex-col items-center justify-center gap-3 border border-white/10 rounded-3xl">
+                  <span className="text-4xl text-gray-600">🖼️</span>
+                  <span className="text-gray-500 text-sm font-semibold tracking-wide">No photo uploaded</span>
+                </div>
+              )}
             </div>
 
             {/* Title & Descriptions */}
@@ -214,20 +263,33 @@ export default function SingleServiceDetail({ serviceId, initialService, initial
             </div>
 
             {/* Two Column Extra Illustrations */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="relative h-64 rounded-2xl overflow-hidden border border-white/5 bg-zinc-900 flex items-center justify-center">
-                <span className="text-6xl">👨‍💻</span>
-                <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-xs font-semibold text-emerald-400">
-                  Custom Development
+            {currentService.images && currentService.images.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {currentService.images.map((img, idx) => (
+                  <div key={idx} className="relative h-64 rounded-2xl overflow-hidden border border-white/5 bg-zinc-900">
+                    <img src={img} alt={`Service Gallery Image ${idx + 1}`} className="w-full h-full object-cover" />
+                    <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-xs font-semibold text-emerald-400">
+                      Photo {idx + 1}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="relative h-64 rounded-2xl overflow-hidden border border-white/5 bg-zinc-900 flex items-center justify-center">
+                  <span className="text-6xl">👨‍💻</span>
+                  <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-xs font-semibold text-emerald-400">
+                    Custom Development
+                  </div>
+                </div>
+                <div className="relative h-64 rounded-2xl overflow-hidden border border-white/5 bg-zinc-900 flex items-center justify-center">
+                  <span className="text-6xl">⚙️</span>
+                  <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-xs font-semibold text-emerald-400">
+                    Clean Architecture
+                  </div>
                 </div>
               </div>
-              <div className="relative h-64 rounded-2xl overflow-hidden border border-white/5 bg-zinc-900 flex items-center justify-center">
-                <span className="text-6xl">⚙️</span>
-                <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-xs font-semibold text-emerald-400">
-                  Clean Architecture
-                </div>
-              </div>
-            </div>
+            )}
 
             {/* Our Capabilities */}
             <div className="space-y-6">
@@ -302,12 +364,6 @@ export default function SingleServiceDetail({ serviceId, initialService, initial
               <p className="text-[#a0a0a0] text-sm mb-6 font-light">
                 Get in touch with us to see how we can help you with your project
               </p>
-
-              {submitted && (
-                <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold">
-                  ✓ Discussion request submitted! We will reach out shortly.
-                </div>
-              )}
 
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -413,58 +469,71 @@ export default function SingleServiceDetail({ serviceId, initialService, initial
             {/* Newsletter widget */}
             <div className="bg-[#181818] border border-white/5 rounded-2xl p-6">
               <h4 className="text-white font-bold text-sm tracking-wider uppercase mb-4 relative pb-3">
-                Newsletter
+                Whatsapp Me
                 <span className="absolute bottom-0 left-0 w-8 h-[2px] bg-emerald-500" />
               </h4>
-              <p className="text-xs text-[#a0a0a0] leading-relaxed mb-5">
+              {/* <p className="text-xs text-[#a0a0a0] leading-relaxed mb-5">
                 Join 20,000 Subscribers!
-              </p>
-              {newsletterSubmitted ? (
-                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-emerald-400 text-xs font-semibold text-center animate-fade-in">
-                  ✓ Successfully signed up! Welcome to our newsletter.
-                </div>
-              ) : (
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    setNewsletterSubmitted(true);
-                  }}
-                  className="space-y-3"
+              </p> */}
+              <form
+                onSubmit={handleNewsletterSubmit}
+                className="space-y-3"
+              >
+                <input
+                  type="text"
+                  required
+                  value={newsletterName}
+                  onChange={(e) => setNewsletterName(e.target.value)}
+                  placeholder="Enter Name"
+                  className="w-full bg-[#111] border border-zinc-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-500 text-white"
+                />
+                <button
+                  type="submit"
+                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3.5 rounded-xl text-xs transition-colors"
                 >
-                  <input
-                    type="email"
-                    required
-                    placeholder="Email Address"
-                    className="w-full bg-[#111] border border-zinc-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-500 text-white"
-                  />
-                  <button
-                    type="submit"
-                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3.5 rounded-xl text-xs transition-colors"
-                  >
-                    Sign Up
-                  </button>
-                </form>
-              )}
+                  Send
+                </button>
+              </form>
               <p className="text-sm text-gray-600 mt-4 leading-normal">
-                By signing up you agree to our{" "}
+                By click on send you agree to our{" "}
                 <Link href="/privacy" className="text-gray-400 hover:underline">
                   Privacy Policy
                 </Link>
               </p>
             </div>
 
-            {/* Instagram Grid widget */}
+            {/* Social Media widget */}
             <div className="bg-[#181818] border border-white/5 rounded-2xl p-6">
               <h4 className="text-white font-bold text-sm tracking-wider uppercase mb-5 relative pb-3">
-                Instagram
+                Follow Me
                 <span className="absolute bottom-0 left-0 w-8 h-[2px] bg-emerald-500" />
               </h4>
-              <div className="grid grid-cols-3 gap-2">
-                {[1, 2, 3, 4, 5, 6].map((imgIdx) => (
-                  <div key={imgIdx} className="relative aspect-square rounded-lg overflow-hidden border border-zinc-800 group cursor-pointer bg-zinc-900 flex items-center justify-center text-sm">
-                    💻
-                  </div>
-                ))}
+              <div className="grid grid-cols-2 gap-3">
+                {siteConfig.socialLinks.linkedin && siteConfig.socialLinks.linkedin !== "#" && (
+                  <a href={siteConfig.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 hover:bg-zinc-800 transition-all text-xs font-semibold text-gray-300 hover:text-white">
+                    <span className="text-sky-400">🔗</span> LinkedIn
+                  </a>
+                )}
+                {siteConfig.socialLinks.github && siteConfig.socialLinks.github !== "#" && (
+                  <a href={siteConfig.socialLinks.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 hover:bg-zinc-800 transition-all text-xs font-semibold text-gray-300 hover:text-white">
+                    <span className="text-white">💻</span> GitHub
+                  </a>
+                )}
+                {siteConfig.socialLinks.facebook && siteConfig.socialLinks.facebook !== "#" && (
+                  <a href={siteConfig.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 hover:bg-zinc-800 transition-all text-xs font-semibold text-gray-300 hover:text-white">
+                    <span className="text-blue-500">📘</span> Facebook
+                  </a>
+                )}
+                {siteConfig.socialLinks.pinterest && siteConfig.socialLinks.pinterest !== "#" && (
+                  <a href={siteConfig.socialLinks.pinterest} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 hover:bg-zinc-800 transition-all text-xs font-semibold text-gray-300 hover:text-white">
+                    <span className="text-red-500">📌</span> Pinterest
+                  </a>
+                )}
+                {siteConfig.whatsapp && (
+                  <a href={`https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 hover:bg-zinc-800 transition-all text-xs font-semibold text-gray-300 hover:text-white col-span-2 justify-center">
+                    <span className="text-emerald-400">💬</span> WhatsApp Me
+                  </a>
+                )}
               </div>
             </div>
           </aside>
