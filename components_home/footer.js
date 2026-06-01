@@ -161,9 +161,9 @@ export default function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h4 className="text-white font-bold text-base mb-5 tracking-wide">Newsletter</h4>
+            <h4 className="text-white font-bold text-base mb-5 tracking-wide">Ping Me</h4>
             <p className="text-gray-400 text-sm leading-relaxed mb-5">
-              Must explain to you how all this mistaken idea pleasure born and give you a complete account.
+              From concept to deployment, creating fast, secure, and user-focused digital experiences powered by modern technologies.
             </p>
             <form onSubmit={handleSubscribe} className="flex gap-2">
               <input

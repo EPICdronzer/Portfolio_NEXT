@@ -44,7 +44,7 @@ export function AdminProvider({ children }) {
 
   // Form fields — each section has its own form state
   const defaultFormService = { category: "Development", title: "", desc: "", iconName: "code", slug: "", images: [], imageMode: "replace" };
-  const defaultFormExp = { startMonth: "", startYear: "", endMonth: "", endYear: "", role: "", company: "", companyExtra: "", href: "#" };
+  const defaultFormExp = { startMonth: "", startYear: "", endMonth: "", endYear: "", role: "", company: "", companyExtra: "", logo: "", href: "#" };
   const defaultFormProj = { title: "", category: "", desc: "", details: "", tech: "", images: [], imgPos: "object-center", href: "#", slug: "", imageMode: "replace" };
   const defaultFormBlog = { title: "", date: "", category: "Development", author: "Harsh Vashishth", readTime: "4 min read", images: [], imgPos: "object-center", content: "", slug: "", imageMode: "replace" };
 
@@ -220,6 +220,7 @@ export function AdminProvider({ children }) {
         role:         item.role         || "",
         company:      item.company      || "",
         companyExtra: item.companyExtra || "",
+        logo:         item.logo         || "",
         href:         item.href         || "#",
       });
     }
@@ -281,6 +282,8 @@ export function AdminProvider({ children }) {
 
     if (modalType === "experience") {
       if (modalAction === "add") {
+        console.log("📋 [Frontend] Adding experience with formExp:", JSON.stringify(formExp, null, 2));
+        console.log("🎯 Logo in formExp?:", formExp.logo);
         const res = await addExperience(formExp);
         if (res.success) {
           setExperiences(prev => [...prev, res.experience]);
@@ -289,6 +292,8 @@ export function AdminProvider({ children }) {
           showToast(res.error || "Failed to add experience.", "warning");
         }
       } else {
+        console.log("📋 [Frontend] Updating experience with formExp:", JSON.stringify(formExp, null, 2));
+        console.log("🎯 Logo in formExp?:", formExp.logo);
         const res = await updateExperience(editItem._id, formExp);
         if (res.success) {
           setExperiences(prev => prev.map(e => e._id === editItem._id ? res.experience : e));

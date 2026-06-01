@@ -144,6 +144,93 @@ function MultiImageUploader({ images, setImages, imageMode, setImageMode, isEdit
   );
 }
 
+/* ────────────────────────────────────────────────────
+   Single-image uploader widget (for company logos)
+   Props:
+     image       — current image URL
+     setImage    — updater for image
+     uploading   — boolean
+     setUploading
+     showAlert
+     uploadId    — unique id for the hidden file input
+     label       — label text (default: "Logo")
+──────────────────────────────────────────────────── */
+function SingleImageUploader({ image, setImage, uploading, setUploading, showAlert, uploadId, label = "Logo" }) {
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = async () => {
+        const { uploadToCloudinary } = await import("@/backend/actions/cloudinary");
+        const res = await uploadToCloudinary(reader.result);
+        if (res.success) {
+          setImage(res.url);
+        } else {
+          showAlert("Failed to upload image.", "Upload Error", "danger");
+        }
+      };
+    } catch (err) {
+      console.error(err);
+      showAlert("Upload error occurred.", "Upload Error", "danger");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const removeImage = () => setImage("");
+
+  return (
+    <div className="space-y-3">
+      <label className={labelCls}>{label}</label>
+
+      {/* Current image thumbnail */}
+      {image && (
+        <div className="relative group inline-block">
+          <img
+            src={image}
+            alt={label}
+            className="w-24 h-24 object-cover rounded-lg border border-zinc-700"
+          />
+          <button
+            type="button"
+            onClick={removeImage}
+            className="absolute -top-2 -right-2 w-6 h-6 bg-rose-600 hover:bg-rose-500 rounded-full flex items-center justify-center text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+          >✕</button>
+        </div>
+      )}
+
+      {/* Upload button */}
+      <div>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden"
+          id={uploadId}
+          disabled={uploading}
+        />
+        <label
+          htmlFor={uploadId}
+          className={`inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl cursor-pointer transition-colors border border-zinc-700 ${uploading ? "opacity-50 pointer-events-none" : ""}`}
+        >
+          {uploading ? (
+            <div className="w-4 h-4 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+          )}
+          {uploading ? "Uploading…" : `Upload ${label}`}
+        </label>
+      </div>
+    </div>
+  );
+}
+
 /* ─────────────────────── Main Modal ─────────────────────── */
 export default function AdminModal() {
   const {
@@ -281,6 +368,15 @@ export default function AdminModal() {
                 <label className={labelCls}>Company Website</label>
                 <input type="text" value={formExp.href} onChange={e => setFormExp({ ...formExp, href: e.target.value })} className={inputCls} placeholder="https://..." />
               </div>
+              <SingleImageUploader
+                image={formExp.logo || ""}
+                setImage={url => setFormExp({ ...formExp, logo: url })}
+                uploading={uploading}
+                setUploading={setUploading}
+                showAlert={showAlert}
+                uploadId="exp-logo-upload"
+                label="Company Logo"
+              />
             </>
           )}
 

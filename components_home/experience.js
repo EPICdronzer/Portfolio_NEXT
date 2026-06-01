@@ -112,9 +112,13 @@ export default function Experience({ initialExperiences }) {
                   key={exp._id || exp.id}
                   className="snap-start flex-shrink-0 w-[75vw] max-w-[300px] group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 flex flex-col items-center text-center hover:border-zinc-600 transition-all duration-300"
                 >
-                  {/* Company Logo Icon */}
+                  {/* Company Logo or Icon */}
                   <div className="mb-5">
-                    <CompanyIcon index={index % 3} />
+                    {exp.logo ? (
+                      <img src={exp.logo} alt={exp.company} className="w-14 h-14 rounded-full object-cover border border-zinc-700" />
+                    ) : (
+                      <CompanyIcon index={index % 3} />
+                    )}
                   </div>
 
                   {/* Period */}
@@ -154,9 +158,13 @@ export default function Experience({ initialExperiences }) {
                   key={exp._id || exp.id}
                   className="group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-8 flex flex-col items-center text-center hover:border-zinc-600 hover:bg-[#1e1e1e] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30"
                 >
-                  {/* Company Logo Icon */}
+                  {/* Company Logo or Icon */}
                   <div className="mb-5">
-                    <CompanyIcon index={index % 3} />
+                    {exp.logo ? (
+                      <img src={exp.logo} alt={exp.company} className="w-14 h-14 rounded-full object-cover border border-zinc-700" />
+                    ) : (
+                      <CompanyIcon index={index % 3} />
+                    )}
                   </div>
 
                   {/* Period */}

@@ -38,8 +38,16 @@ export async function getExperiences() {
 /** Add a new experience entry */
 export async function addExperience(data) {
   try {
+    console.log("🚀 [Experience] ADD EXPERIENCE CALLED");
+    console.log("📦 Raw data received:", JSON.stringify(data, null, 2));
+    
     await connect();
     const count = await Experience.countDocuments();
+    
+    console.log("🏢 Company:", data.company);
+    console.log("🎯 Logo URL:", data.logo);
+    console.log("🎯 Logo present?:", !!data.logo);
+    
     const experience = await Experience.create({
       startMonth:   data.startMonth   || "",
       startYear:    data.startYear,
@@ -48,9 +56,15 @@ export async function addExperience(data) {
       role:         data.role,
       company:      data.company,
       companyExtra: data.companyExtra || "",
+      logo:         data.logo         || "",
       href:         data.href         || "#",
       order: count,
     });
+    
+    console.log("✅ [Experience] Created successfully!");
+    console.log("✅ Logo in DB:", experience.logo);
+    console.log("═══════════════════════════════════════\n");
+    
     const serialized = serializeExp(experience);
     serialized.period = buildPeriod(experience);
     
@@ -60,7 +74,7 @@ export async function addExperience(data) {
     
     return { success: true, experience: serialized };
   } catch (error) {
-    console.error("addExperience error:", error);
+    console.error("❌ [Experience] addExperience error:", error);
     return { success: false, error: error.message };
   }
 }
@@ -79,6 +93,7 @@ export async function updateExperience(id, data) {
         ...(data.role         !== undefined && { role:         data.role }),
         ...(data.company      !== undefined && { company:      data.company }),
         ...(data.companyExtra !== undefined && { companyExtra: data.companyExtra }),
+        ...(data.logo         !== undefined && { logo:         data.logo }),
         ...(data.href         !== undefined && { href:         data.href }),
         ...(data.order        !== undefined && { order:        data.order }),
       },
@@ -87,6 +102,9 @@ export async function updateExperience(id, data) {
     if (!experience) return { success: false, error: "Experience not found" };
     const serialized = serializeExp(experience);
     serialized.period = buildPeriod(experience);
+    
+    console.log("✅ [Experience] Updated successfully!");
+    console.log("✅ Logo in DB:", experience.logo);
     
     // Clear cache on Vercel
     revalidatePath("/about");

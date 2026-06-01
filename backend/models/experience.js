@@ -9,6 +9,7 @@ const ExperienceSchema = new mongoose.Schema({
   role:       { type: String, required: true },
   company:    { type: String, required: true },
   companyExtra: { type: String, default: "" }, // e.g. "(Remote)"
+  logo:       { type: String, default: "" },   // Company logo URL from Cloudinary
   // Website link shown as "Go to website"
   href: { type: String, default: "#" },
   order: { type: Number, default: 0 },
