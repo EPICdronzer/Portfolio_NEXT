@@ -6,26 +6,57 @@ import { siteConfig } from "@/app/config";
 import { useToast } from "@/app/context/ToastContext";
 
 const socialLinks = [
+  
   {
-    id: "fb", href: siteConfig.socialLinks.facebook, label: "Facebook",
-    icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>,
+    id: "li",
+    href: siteConfig.socialLinks.linkedin,
+    label: "LinkedIn",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-4 w-4"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
+        <circle cx="4" cy="4" r="2" />
+      </svg>
+    ),
   },
+
   {
-    id: "tw", href: siteConfig.socialLinks.twitter, label: "Twitter",
-    icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>,
+    id: "gh",
+    href: siteConfig.socialLinks.github,
+    label: "GitHub",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-4 w-4"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path d="M12 .5C5.65.5.5 5.65.5 12A11.5 11.5 0 008.35 22.93c.6.11.82-.26.82-.58v-2.17c-3.19.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.52-2.55-.29-5.24-1.27-5.24-5.67 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.14 1.17a10.9 10.9 0 015.72 0c2.18-1.48 3.14-1.17 3.14-1.17.62 1.58.23 2.75.11 3.04.73.8 1.18 1.82 1.18 3.07 0 4.41-2.69 5.38-5.25 5.66.41.35.77 1.03.77 2.08v3.09c0 .32.22.69.83.58A11.5 11.5 0 0023.5 12C23.5 5.65 18.35.5 12 .5z" />
+      </svg>
+    ),
   },
+
   {
-    id: "li", href: siteConfig.socialLinks.linkedin, label: "LinkedIn",
-    icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>,
+    id: "wa",
+    href: siteConfig.socialLinks.whatsapp,
+    label: "WhatsApp",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-4 w-4"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path d="M20.52 3.48A11.88 11.88 0 0012.06 0C5.5 0 .17 5.33.17 11.89c0 2.09.55 4.13 1.59 5.93L0 24l6.35-1.67a11.9 11.9 0 005.71 1.46h.01c6.56 0 11.89-5.33 11.89-11.89 0-3.18-1.24-6.17-3.44-8.42zM12.07 21.76h-.01a9.85 9.85 0 01-5.01-1.37l-.36-.21-3.77.99 1.01-3.68-.23-.38a9.82 9.82 0 01-1.5-5.22c0-5.43 4.42-9.85 9.86-9.85 2.63 0 5.11 1.03 6.96 2.89a9.79 9.79 0 012.89 6.96c0 5.43-4.42 9.86-9.84 9.86zm5.4-7.38c-.29-.14-1.72-.85-1.99-.95-.27-.1-.46-.14-.66.14-.19.29-.75.95-.92 1.14-.17.19-.34.22-.63.08-.29-.14-1.21-.45-2.31-1.44-.85-.76-1.42-1.7-1.58-1.99-.17-.29-.02-.44.12-.58.13-.13.29-.34.43-.51.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.08-.14-.66-1.58-.9-2.17-.24-.57-.49-.49-.66-.5h-.56c-.19 0-.51.07-.77.36-.27.29-1.02 1-1.02 2.43s1.05 2.81 1.2 3c.14.19 2.06 3.15 5 4.42.7.3 1.25.48 1.68.61.71.22 1.36.19 1.87.12.57-.08 1.72-.7 1.96-1.38.24-.68.24-1.26.17-1.38-.07-.12-.27-.19-.56-.33z" />
+      </svg>
+    ),
   },
-  {
-    id: "pi", href: siteConfig.socialLinks.pinterest, label: "Pinterest",
-    icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>,
-  },
-  {
-    id: "vk", href: siteConfig.socialLinks.vk, label: "VK",
-    icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M11.701 18.771H12.957C12.957 18.771 13.35 18.726 13.55 18.509C13.735 18.308 13.729 17.932 13.729 17.932C13.729 17.932 13.703 16.153 14.555 15.889C15.393 15.628 16.48 17.607 17.633 18.372C18.51 18.95 19.18 18.818 19.18 18.818L22.132 18.771C22.132 18.771 23.676 18.677 22.956 17.477C22.895 17.374 22.521 16.566 20.632 14.817C18.656 12.987 18.919 13.284 21.281 10.111C22.697 8.22 23.268 7.078 23.094 6.577C22.929 6.1 21.894 6.224 21.894 6.224L18.574 6.244C18.574 6.244 18.331 6.212 18.152 6.323C17.977 6.432 17.865 6.683 17.865 6.683C17.865 6.683 17.31 8.143 16.561 9.393C14.979 12.032 14.329 12.173 14.067 11.999C13.46 11.597 13.609 10.463 13.609 9.66C13.609 7.113 13.996 6.051 12.85 5.779C12.461 5.686 12.178 5.625 11.156 5.615C9.852 5.601 8.748 5.619 8.124 5.934C7.714 6.14 7.396 6.6 7.596 6.625C7.844 6.656 8.403 6.771 8.7 7.181C9.084 7.71 9.071 8.897 9.071 8.897C9.071 8.897 9.284 11.617 8.588 12.01C8.116 12.271 7.472 11.738 6.063 9.362C5.342 8.1 4.802 6.7 4.802 6.7C4.802 6.7 4.706 6.458 4.534 6.328C4.325 6.171 4.032 6.12 4.032 6.12L0.878 6.14C0.878 6.14 0.411 6.153 0.236 6.356C0.08 6.537 0.224 6.912 0.224 6.912C0.224 6.912 2.762 12.953 5.633 15.999C8.272 18.802 11.271 18.771 11.271 18.771H11.701Z"/></svg>,
-  },
+
+  
 ];
 
 export default function Footer() {
@@ -51,8 +82,8 @@ export default function Footer() {
 
       {/* ── Full-bleed CTA Banner ── */}
       <div
-        className="w-full px-6 md:px-24 py-14 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)" }}
+        className="mx-4 md:mx-10 lg:mx-16 mt-8 px-6 md:px-16 py-14 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden rounded-3xl"
+        style={{ background: "linear-gradient(135deg, #059669 0%, #047857 100%)" }}
       >
         {/* Concentric circle rings pattern overlay */}
         <svg
@@ -80,7 +111,7 @@ export default function Footer() {
         </h3>
         <a
           href="/contact"
-          className="relative z-10 inline-flex items-center gap-2 bg-[#1a1a1a] hover:bg-zinc-800 text-white font-bold px-7 py-3.5 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl whitespace-nowrap group"
+          className="relative z-10 inline-flex items-center gap-2 bg-[#1a1a1a] hover:bg-zinc-800 text-white font-bold px-7 py-3.5 rounded-full shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl whitespace-nowrap group"
         >
           Contact Us
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -112,7 +143,7 @@ export default function Footer() {
                   key={s.id}
                   href={s.href}
                   aria-label={s.label}
-                  className="w-8 h-8 bg-zinc-800 border border-zinc-700 flex items-center justify-center text-gray-400 hover:text-white hover:bg-emerald-500 hover:border-emerald-500 transition-all duration-200"
+                  className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-gray-400 hover:text-white hover:bg-emerald-500 hover:border-emerald-500 transition-all duration-200"
                 >
                   {s.icon}
                 </a>
@@ -172,11 +203,11 @@ export default function Footer() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter Name *"
                 required
-                className="flex-grow bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 text-sm px-4 py-2.5 focus:outline-none focus:border-emerald-500 transition-colors duration-200"
+                className="flex-grow bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 text-sm px-4 py-2.5 rounded-xl focus:outline-none focus:border-emerald-500 transition-colors duration-200"
               />
               <button
                 type="submit"
-                className="flex-shrink-0 w-10 h-10 bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center text-black transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/20"
+                className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center text-black transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/20"
                 aria-label="Subscribe"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

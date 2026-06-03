@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { stripMarkdown, parseInline } from "@/backend/lib/markdown";
+
 
 const servicesDetailed = [
   {
@@ -113,7 +115,10 @@ export default function ServiceDetail({ initialServices }) {
   const [activeCat, setActiveCat] = useState("Development");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [expandedId, setExpandedId] = useState(null);
   const SERVICES_PER_PAGE = 3;
+
+  const toggleAccordion = (id) => setExpandedId(prev => prev === id ? null : id);
 
   const displayData = hasData
     ? initialServices.map((item) => ({
@@ -191,12 +196,12 @@ export default function ServiceDetail({ initialServices }) {
         </div>
 
         {/* Category Tabs */}
-        <div className="flex justify-center gap-4 mb-12 flex-wrap">
+        <div className="flex justify-center gap-3 mb-10 flex-wrap">
           {["Development", "Design", "Marketing"].map((cat) => (
             <button
               key={cat}
-              onClick={() => { setActiveCat(cat); setPage(1); }}
-              className={`px-8 py-3.5 rounded-full font-bold text-sm tracking-wider uppercase transition-all duration-300 ${
+              onClick={() => { setActiveCat(cat); setPage(1); setExpandedId(null); }}
+              className={`px-6 py-2.5 rounded-full font-bold text-sm tracking-wider uppercase transition-all duration-300 ${
                 activeCat === cat
                   ? "bg-emerald-500 text-black shadow-lg shadow-emerald-500/20"
                   : "bg-white/[0.03] text-gray-300 hover:bg-white/[0.06] hover:text-white border border-white/5"
@@ -211,10 +216,79 @@ export default function ServiceDetail({ initialServices }) {
           <p className="text-center py-16 text-gray-500">No services found for &ldquo;{search}&rdquo;</p>
         )}
 
-        {/* Detailed Service Show */}
-        <div className="space-y-20">
+        {/* ── MOBILE: Blog-style accordion list ── */}
+        <div className="flex md:hidden flex-col gap-2 mb-8">
+          {paginated.map((item) => {
+            const isOpen = expandedId === item.id;
+            return (
+              <div
+                key={item.id}
+                className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
+                  isOpen ? "border-emerald-500/40 bg-[#131313]" : "border-white/5 bg-[#111111]"
+                }`}
+              >
+                {/* Collapsed row */}
+                <button
+                  type="button"
+                  onClick={() => toggleAccordion(item.id)}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left"
+                >
+                  {/* Icon thumbnail */}
+                  <div className={`w-14 h-14 rounded-xl flex-shrink-0 flex items-center justify-center bg-gradient-to-br ${item.color} relative overflow-hidden`}>
+                    <div className="absolute inset-0 bg-black/40" />
+                    <div className="relative z-10 text-white scale-75">{item.icon}</div>
+                  </div>
+
+                  {/* Text */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">
+                      {item.category}
+                    </p>
+                    <p className={`font-bold text-sm leading-tight line-clamp-2 transition-colors duration-200 ${
+                      isOpen ? "text-emerald-400" : "text-white"
+                    }`}>
+                      {item.title}
+                    </p>
+                  </div>
+
+                  {/* Chevron */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`h-4 w-4 flex-shrink-0 transition-all duration-300 ${
+                      isOpen ? "rotate-180 text-emerald-400" : "text-zinc-500"
+                    }`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {/* Expanded panel */}
+                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                  isOpen ? "max-h-56 opacity-100" : "max-h-0 opacity-0"
+                }`}>
+                  <div className="px-4 pb-4 pt-0 space-y-3 border-t border-white/5">
+                    <p className="text-gray-400 text-xs leading-relaxed pt-3">{stripMarkdown(item.desc)}</p>
+                    <a
+                      href={`/service/${item.id}`}
+                      className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs px-4 py-2 rounded-full transition-colors duration-200"
+                    >
+                      Read More
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── DESKTOP: Detailed split-card layout ── */}
+        <div className="hidden md:block space-y-20">
         {paginated.map((item) => (
-            <Link href={`/service/${item.id}`} key={item.title} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center animate-fadeIn cursor-pointer group/link block">
+            <a href={`/service/${item.id}`} key={item.title} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center animate-fadeIn cursor-pointer group/link block">
               {/* Card visual details left */}
               <div className="lg:col-span-5">
                 <div className={`relative p-10 rounded-3xl bg-gradient-to-br ${item.color} shadow-2xl overflow-hidden group transition-all duration-300 hover:scale-[1.02] hover:shadow-${item.color.split('-')[1]}-500/20`}>
@@ -250,7 +324,7 @@ export default function ServiceDetail({ initialServices }) {
               <div className="lg:col-span-7 flex flex-col justify-center">
                 <h4 className="text-sm font-bold tracking-widest text-emerald-400 uppercase mb-4 group-hover/link:text-emerald-300 transition-colors">Service Details</h4>
                 <h2 className="text-4xl font-extrabold text-white mb-6 leading-tight group-hover/link:text-gray-200 transition-colors">{item.title}</h2>
-                <p className="text-gray-400 text-base md:text-lg leading-relaxed mb-8">{item.desc}</p>
+                <p className="text-gray-400 text-base md:text-lg leading-relaxed mb-8">{stripMarkdown(item.desc)}</p>
 
                 <h5 className="text-white font-bold text-base mb-4 tracking-wide">Key Features & Deliverables:</h5>
                 <ul className="space-y-4">
@@ -261,12 +335,12 @@ export default function ServiceDetail({ initialServices }) {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
                       </span>
-                      <span className="text-gray-300 text-sm leading-relaxed">{feat}</span>
+                      <span className="text-gray-300 text-sm leading-relaxed">{parseInline(feat)}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-            </Link>
+            </a>
         ))}
         </div>
 

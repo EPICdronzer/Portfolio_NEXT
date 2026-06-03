@@ -28,6 +28,8 @@ function FieldRow({ children }) {
      uploadId    — unique id for the hidden file input
 ──────────────────────────────────────────────────── */
 function MultiImageUploader({ images, setImages, imageMode, setImageMode, isEdit, uploading, setUploading, showAlert, uploadId }) {
+  const safeImages = Array.isArray(images) ? images : [];
+
   const handleFilesChange = async (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
@@ -48,7 +50,13 @@ function MultiImageUploader({ images, setImages, imageMode, setImageMode, isEdit
       if (uploaded.length < files.length) {
         showAlert(`${files.length - uploaded.length} image(s) failed to upload.`, "Upload Warning", "warning");
       }
-      setImages(prev => [...prev, ...uploaded]);
+      
+      const safePrev = Array.isArray(images) ? images : [];
+      if (imageMode === "replace") {
+        setImages(uploaded);
+      } else {
+        setImages([...safePrev, ...uploaded]);
+      }
     } catch (err) {
       console.error(err);
       showAlert("Upload error occurred.", "Upload Error", "danger");
@@ -58,7 +66,10 @@ function MultiImageUploader({ images, setImages, imageMode, setImageMode, isEdit
     }
   };
 
-  const removeImage = (idx) => setImages(prev => prev.filter((_, i) => i !== idx));
+  const removeImage = (idx) => {
+    const safePrev = Array.isArray(images) ? images : [];
+    setImages(safePrev.filter((_, i) => i !== idx));
+  };
 
   return (
     <div className="space-y-3">
@@ -90,9 +101,9 @@ function MultiImageUploader({ images, setImages, imageMode, setImageMode, isEdit
       )}
 
       {/* Current image thumbnails */}
-      {images.length > 0 && (
+      {safeImages.length > 0 && (
         <div className="flex flex-wrap gap-2 p-3 bg-zinc-900/50 rounded-xl border border-zinc-800">
-          {images.map((url, idx) => (
+          {safeImages.map((url, idx) => (
             <div key={idx} className="relative group">
               <img
                 src={url}
@@ -136,7 +147,7 @@ function MultiImageUploader({ images, setImages, imageMode, setImageMode, isEdit
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
             </svg>
           )}
-          {uploading ? "Uploading…" : `Upload Image${images.length > 0 ? "s" : ""} to Cloudinary`}
+          {uploading ? "Uploading…" : `Upload Image${safeImages.length > 0 ? "s" : ""} to Cloudinary`}
         </label>
         <p className="text-zinc-600 text-[11px] mt-1.5">Select multiple files at once. The first image will be used as the cover/thumbnail.</p>
       </div>
@@ -161,20 +172,28 @@ function SingleImageUploader({ image, setImage, uploading, setUploading, showAle
     if (!file) return;
     setUploading(true);
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = async () => {
-        const { uploadToCloudinary } = await import("@/backend/actions/cloudinary");
-        const res = await uploadToCloudinary(reader.result);
-        if (res.success) {
-          setImage(res.url);
-        } else {
-          showAlert("Failed to upload image.", "Upload Error", "danger");
-        }
-      };
+      const url = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = async () => {
+          try {
+            const { uploadToCloudinary } = await import("@/backend/actions/cloudinary");
+            const res = await uploadToCloudinary(reader.result);
+            if (res.success) {
+              resolve(res.url);
+            } else {
+              reject(new Error("Failed to upload image."));
+            }
+          } catch (err) {
+            reject(err);
+          }
+        };
+        reader.onerror = () => reject(new Error("File reading failed."));
+      });
+      setImage(url);
     } catch (err) {
       console.error(err);
-      showAlert("Upload error occurred.", "Upload Error", "danger");
+      showAlert(err.message || "Upload error occurred.", "Upload Error", "danger");
     } finally {
       setUploading(false);
       e.target.value = "";

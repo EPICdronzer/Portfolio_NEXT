@@ -207,7 +207,7 @@ export function AdminProvider({ children }) {
         desc:     item.desc,
         iconName: item.iconName || "code",
         slug:     item.slug    || "",
-        images:   item.images  || (item.image ? [item.image] : []),
+        images:   Array.isArray(item.images) ? item.images : (item.image ? [item.image] : []),
         imageMode: "replace",
       });
     }
@@ -221,7 +221,7 @@ export function AdminProvider({ children }) {
         company:      item.company      || "",
         companyExtra: item.companyExtra || "",
         logo:         item.logo         || "",
-        images:       item.images       || (item.image ? [item.image] : []),
+        images:       Array.isArray(item.images) ? item.images : (item.image ? [item.image] : []),
         imageMode:    "replace",
         href:         item.href         || "#",
       });
@@ -233,7 +233,7 @@ export function AdminProvider({ children }) {
         desc:     item.desc     || "",
         details:  item.details  || "",
         tech:     Array.isArray(item.tech) ? item.tech.join(", ") : (item.tech || ""),
-        images:   item.images   || (item.image && item.image !== "/portfolio_screenshots.png" ? [item.image] : []),
+        images:   Array.isArray(item.images) ? item.images : (item.image && item.image !== "/portfolio_screenshots.png" ? [item.image] : []),
         imgPos:   item.imgPos   || "object-center",
         href:     item.href     || "#",
         slug:     item.slug     || "",
@@ -247,7 +247,7 @@ export function AdminProvider({ children }) {
         category: item.category || "Development",
         author:   item.author   || "Harsh Vashishth",
         readTime: item.readTime || "4 min read",
-        images:   item.images   || (item.image && item.image !== "/blog_thumbnails.png" ? [item.image] : []),
+        images:   Array.isArray(item.images) ? item.images : (item.image && item.image !== "/blog_thumbnails.png" ? [item.image] : []),
         imgPos:   item.imgPos   || "object-center",
         content:  item.content  || "",
         slug:     item.slug     || "",

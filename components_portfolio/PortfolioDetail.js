@@ -1,10 +1,60 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 const ITEMS_PER_PAGE = 6;
+
+/* ─── Slideshow image for desktop cards ─── */
+function SlideshowCard({ images, imgPos, title, isActive }) {
+  const [idx, setIdx] = useState(0);
+  const next = useCallback(() => setIdx(i => (i + 1) % images.length), [images.length]);
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const t = setInterval(next, 3500);
+    return () => clearInterval(t);
+  }, [images.length, next]);
+
+  const src = images[idx];
+  return (
+    <>
+      {src ? (
+        <>
+          <Image
+            src={src}
+            alt={title}
+            fill
+            sizes="(max-width: 1024px) 50vw, 33vw"
+            className={`object-cover opacity-90 transition-all duration-700 ease-out ${
+              isActive ? "scale-110" : "grayscale group-hover:scale-110 group-hover:grayscale-0"
+            } ${imgPos}`}
+          />
+          {/* Subtle base gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+          {/* Slide dots for multiple images */}
+          {images.length > 1 && (
+            <div className="absolute top-3 right-3 z-10 flex gap-1">
+              {images.map((_, i) => (
+                <span
+                  key={i}
+                  className={`block rounded-full transition-all duration-300 ${
+                    i === idx ? "w-3 h-1.5 bg-white" : "w-1.5 h-1.5 bg-white/40"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="w-full h-full bg-[#111] flex flex-col items-center justify-center gap-3">
+          <span className="text-3xl text-gray-700">🖼️</span>
+          <span className="text-gray-600 text-sm font-semibold">No photo uploaded</span>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function PortfolioDetail({ initialPortfolios }) {
   const hasData = initialPortfolios && initialPortfolios.length > 0;
@@ -16,6 +66,7 @@ export default function PortfolioDetail({ initialPortfolios }) {
         category: item.category || "Project",
         desc: item.desc || `${item.title} — a premium, thoughtfully crafted project.`,
         image: item.image || "/portfolio_screenshots.png",
+        images: Array.isArray(item.images) && item.images.length > 0 ? item.images : (item.image ? [item.image] : []),
         imgPos: item.imgPos || "object-center",
         href: item.href || "#",
       }))
@@ -265,28 +316,11 @@ export default function PortfolioDetail({ initialPortfolios }) {
                   </div>
                 )}
 
-                {/* Hover / tap overlay */}
-                <div
-                  className={`absolute inset-0 flex flex-col justify-end p-6 transition-transform duration-500 ease-out bg-gradient-to-t from-black/90 via-black/50 to-transparent ${
-                    isActive ? "translate-y-0" : "translate-y-full group-hover:translate-y-0"
-                  }`}
-                >
-                  {isActive && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setTappedCard(null); }}
-                      className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center text-white text-xs"
-                      aria-label="Close"
-                    >✕</button>
-                  )}
-
-                  <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase text-emerald-400 mb-2">
-                    {project.category}
-                  </span>
-                  <h3 className="text-white font-extrabold text-base leading-snug mb-3 tracking-tight">
+                {/* Always-visible bottom overlay: only title + View Project */}
+                <div className="absolute inset-0 flex flex-col justify-end p-5 bg-gradient-to-t from-black/90 via-black/50 to-black/10">
+                  <h3 className="text-white font-extrabold text-sm md:text-base leading-snug mb-3 tracking-tight drop-shadow-lg">
                     {project.title}
                   </h3>
-                  <p className="text-gray-300 text-xs leading-relaxed mb-4 line-clamp-2">{project.desc}</p>
-
                   <Link
                     href={`/portfolio/${project.id}`}
                     onClick={(e) => e.stopPropagation()}

@@ -103,17 +103,8 @@ export async function updateExperience(id, data) {
       ...(data.order        !== undefined && { order:        data.order }),
     };
 
-    if (data.imageMode === "append") {
-      if (newImages.length > 0) {
-        const existing = await Experience.findById(id).select("images image");
-        const merged = [...(existing?.images || []), ...newImages];
-        updateFields.images = merged;
-        updateFields.image  = merged[0] || existing?.image || "";
-      }
-    } else {
-      updateFields.images = newImages;
-      updateFields.image  = newImages[0] || "";
-    }
+    updateFields.images = newImages;
+    updateFields.image  = newImages[0] || "";
 
     const experience = await Experience.findByIdAndUpdate(id, updateFields, { new: true });
     if (!experience) return { success: false, error: "Experience not found" };

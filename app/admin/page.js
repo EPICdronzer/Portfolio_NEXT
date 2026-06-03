@@ -96,11 +96,11 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-zinc-800/80 text-center">
+        {/* <div className="mt-8 pt-6 border-t border-zinc-800/80 text-center">
           <span className="text-xs text-zinc-500">
             Demo Credentials: <code className="text-amber-400 bg-amber-500/5 px-1.5 py-0.5 rounded border border-amber-500/10">admin</code> / <code className="text-amber-400 bg-amber-500/5 px-1.5 py-0.5 rounded border border-amber-500/10">admin123</code>
           </span>
-        </div>
+        </div> */}
       </div>
     </div>
   );

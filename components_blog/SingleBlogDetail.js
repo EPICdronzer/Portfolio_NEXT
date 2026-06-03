@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { siteConfig } from "@/app/config";
 import { useToast } from "@/app/context/ToastContext";
+import ImageSlideshow from "@/components/ImageSlideshow";
+import { parseMarkdownToJSX } from "@/backend/lib/markdown";
 
 /* ─── Fallback sidebar services (shown when DB has none) ─── */
 const FALLBACK_SERVICES = [
@@ -107,21 +109,20 @@ export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
   ═══════════════════════════════════════ */
   const title    = initialBlog.title   || "Untitled Post";
   const date     = initialBlog.date    || new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "2-digit" });
-  const image    = initialBlog.image;
-  const hasImage = image && image !== "" && image !== "/my.png" && image !== "/blog_thumbnails.png";
   const category = initialBlog.category|| "Development";
   const author   = initialBlog.author  || "Harsh Vashishth";
   const readTime = initialBlog.readTime|| "4 min read";
 
+  // Merge cover image + images array — all real Cloudinary URLs
+  const allImages = Array.isArray(initialBlog.images) && initialBlog.images.length > 0 ? initialBlog.images : (initialBlog.image ? [initialBlog.image] : []);
+
   /* content can be a string (rich text) or array of paragraphs */
-  const paragraphs = Array.isArray(initialBlog.content)
-    ? initialBlog.content
+  const codeSnippetText = initialBlog.codeSnippet ? `\n\n\`\`\`javascript\n${initialBlog.codeSnippet}\n\`\`\`` : "";
+  const blogContent = (Array.isArray(initialBlog.content)
+    ? initialBlog.content.join("\n\n")
     : typeof initialBlog.content === "string" && initialBlog.content.trim()
-      ? initialBlog.content.split(/\n{2,}/).filter(Boolean)
-      : [
-          "This article explores modern development practices and engineering principles.",
-          "Stay tuned as the full content is published through the administrator dashboard.",
-        ];
+      ? initialBlog.content
+      : "This article explores modern development practices and engineering principles.\n\nStay tuned as the full content is published through the administrator dashboard.") + codeSnippetText;
 
   /* ═══════════════════════════════════════
       FULL BLOG POST UI
@@ -134,20 +135,16 @@ export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
           {/* ── LEFT: Main Content (8 cols) ── */}
           <div className="lg:col-span-8 space-y-10">
 
-            {/* Banner image */}
-            <div className="relative w-full h-[320px] sm:h-[420px] rounded-3xl overflow-hidden border border-white/5">
-              {hasImage ? (
-                <img
-                  src={image}
-                  alt={title}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-zinc-900/50 flex flex-col items-center justify-center gap-3 border border-white/10 rounded-3xl">
-                  <span className="text-4xl text-gray-600">🖼️</span>
-                  <span className="text-gray-500 text-sm font-semibold tracking-wide">No photo uploaded</span>
-                </div>
-              )}
+            {/* Banner — auto slideshow for multiple images, single for one */}
+            <div className="rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
+              <ImageSlideshow
+                images={allImages}
+                alt={title}
+                className="w-full h-[320px] sm:h-[420px] rounded-3xl"
+                interval={4000}
+                showDots={true}
+                showArrows={true}
+              />
             </div>
 
             {/* Meta tags */}
@@ -164,15 +161,13 @@ export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
               <span>By {author}</span>
             </div>
 
-            {/* Title & paragraphs */}
+            {/* Title & parsed content */}
             <div>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-6 tracking-tight leading-snug">
                 {title}
               </h1>
               <div className="space-y-6 text-[#a0a0a0] text-base leading-relaxed font-light">
-                {paragraphs.map((p, idx) => (
-                  <p key={idx}>{p}</p>
-                ))}
+                {parseMarkdownToJSX(blogContent)}
               </div>
             </div>
 
@@ -187,14 +182,7 @@ export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
               </div>
             )}
 
-            {/* Code snippet block */}
-            <div className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 font-mono text-xs overflow-x-auto text-emerald-400">
-              <span className="text-gray-500">// Example next.js Server Component</span><br />
-              <span className="text-purple-400">export async function</span> <span className="text-blue-400">generateMetadata</span>({`{ params }`}) &#123;<br />
-              &nbsp;&nbsp;<span className="text-purple-400">const</span> id = <span className="text-purple-400">await</span> params.id;<br />
-              &nbsp;&nbsp;<span className="text-purple-400">return</span> &#123; title: <span className="text-amber-300">{"`${id} - Creative Blog`"}</span> &#125;;<br />
-              &#125;
-            </div>
+
 
             {/* Comment form */}
             <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 shadow-xl mt-6 relative">

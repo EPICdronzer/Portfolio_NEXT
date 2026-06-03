@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { stripMarkdown } from "@/backend/lib/markdown";
 
 const blogsDetailed = [
   {
@@ -86,7 +87,7 @@ export default function BlogDetail({ initialBlogs }) {
         readTime: "5 min read",
         author: "Harsh Vashishth",
         category: "Technology",
-        desc: item.content ? (item.content.substring(0, 150) + "...") : "Interesting technology blog post.",
+        desc: item.content ? (stripMarkdown(item.content).substring(0, 150) + "...") : "Interesting technology blog post.",
         image: item.image || "/blog_thumbnails.png",
         imgPos: item.imgPos || "object-center",
       }))

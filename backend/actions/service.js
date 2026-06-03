@@ -72,18 +72,8 @@ export async function updateService(id, data) {
     };
 
     const newImages = Array.isArray(data.images) ? data.images.filter(Boolean) : [];
-
-    if (data.imageMode === "append") {
-      if (newImages.length > 0) {
-        const existing = await Service.findById(id).select("images image");
-        const merged = [...(existing?.images || []), ...newImages];
-        updateDoc.images = merged;
-        updateDoc.image  = merged[0] || existing?.image || "";
-      }
-    } else {
-      updateDoc.images = newImages;
-      updateDoc.image  = newImages[0] || "";
-    }
+    updateDoc.images = newImages;
+    updateDoc.image  = newImages[0] || "";
 
     const service = await Service.findByIdAndUpdate(id, updateDoc, { new: true });
     if (!service) return { success: false, error: "Service not found" };

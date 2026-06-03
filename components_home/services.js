@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { stripMarkdown } from "@/backend/lib/markdown";
+
 
 const servicesData = {
   Development: [
@@ -166,7 +168,10 @@ const getServiceIcon = (name) => {
 
 export default function Services({ initialServices }) {
   const [activeTab, setActiveTab] = useState("Development");
+  const [expandedId, setExpandedId] = useState(null);
   const tabs = ["Development", "Design", "Marketing"];
+
+  const toggleAccordion = (id) => setExpandedId(prev => prev === id ? null : id);
 
   const hasData = initialServices && initialServices.length > 0;
 
@@ -226,7 +231,7 @@ export default function Services({ initialServices }) {
               {tabs.map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab)}
+              onClick={() => { setActiveTab(tab); setExpandedId(null); }}
                   className={`px-7 py-2.5 rounded-full font-semibold text-sm tracking-wide transition-all duration-300 ${
                     activeTab === tab
                       ? "bg-amber-400 text-black shadow-lg shadow-amber-400/20"
@@ -238,25 +243,78 @@ export default function Services({ initialServices }) {
               ))}
             </div>
 
-            {/* Service Cards — Swipeable on mobile, grid on desktop */}
-            {/* Mobile horizontal scroll */}
-            <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-6 px-6 snap-x snap-mandatory scrollbar-hide">
-              {currentServices.map((service) => (
-                <Link
-                  href={`/service/${service.id}`}
-                  key={service.id}
-                  className="snap-start flex-shrink-0 w-[75vw] max-w-[300px] group bg-[#1a1a1a] border border-zinc-800 rounded-2xl p-6 flex flex-col items-center text-center hover:border-amber-400/40 transition-all duration-300 cursor-pointer block"
-                >
-                  <div className="w-14 h-14 rounded-full bg-zinc-800 group-hover:bg-amber-400/10 flex items-center justify-center mb-5 text-amber-400 transition-all duration-300">
-                    {service.icon}
+            {/* ── Mobile: Blog-style list ── */}
+            <div className="flex md:hidden flex-col gap-2">
+              {currentServices.map((service) => {
+                const isOpen = expandedId === service.id;
+                return (
+                  <div
+                    key={service.id}
+                    className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
+                      isOpen
+                        ? "border-amber-400/40 bg-[#1e1e1e]"
+                        : "border-zinc-800 bg-[#1a1a1a]"
+                    }`}
+                  >
+                    {/* ── Collapsed row (blog-card style) ── */}
+                    <button
+                      type="button"
+                      onClick={() => toggleAccordion(service.id)}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left"
+                    >
+                      {/* Thumbnail / icon box */}
+                      <div className={`w-14 h-14 rounded-xl flex-shrink-0 flex items-center justify-center transition-colors duration-300 ${
+                        isOpen
+                          ? "bg-amber-400/20 text-amber-400"
+                          : "bg-zinc-800 text-amber-400"
+                      }`}>
+                        {service.icon}
+                      </div>
+
+                      {/* Text */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-amber-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">
+                          {activeTab}
+                        </p>
+                        <p className={`font-bold text-sm leading-tight line-clamp-2 transition-colors duration-200 ${
+                          isOpen ? "text-amber-400" : "text-white"
+                        }`}>
+                          {service.title}
+                        </p>
+                      </div>
+
+                      {/* Chevron */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className={`h-4 w-4 flex-shrink-0 transition-all duration-300 ${
+                          isOpen ? "rotate-180 text-amber-400" : "text-zinc-500"
+                        }`}
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {/* ── Expanded panel ── */}
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                      isOpen ? "max-h-48 opacity-100" : "max-h-0 opacity-0"
+                    }`}>
+                      <div className="px-4 pb-4 pt-0 space-y-3 border-t border-zinc-800">
+                        <p className="text-gray-400 text-xs leading-relaxed pt-3">{stripMarkdown(service.desc)}</p>
+                        <Link
+                          href={`/service/${service.id}`}
+                          className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs px-4 py-2 rounded-full transition-colors duration-200"
+                        >
+                          Read More
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          </svg>
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="text-white font-bold text-base mb-2">{service.title}</h3>
-                 <div className="inline-flex items-center gap-2 text-gray-400 group-hover:text-amber-400 text-xs font-semibold transition-colors duration-200 mt-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                    Learn More
-                  </div>
-                </Link>
-              ))}
+                );
+              })}
             </div>
 
             {/* Desktop grid */}

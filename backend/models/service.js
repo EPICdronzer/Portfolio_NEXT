@@ -15,9 +15,5 @@ const ServiceSchema = new mongoose.Schema({
   order:  { type: Number, default: 0 },
 }, { timestamps: true });
 
-// Force clear cached model in development to prevent Mongoose schema hot-reload cache bugs
-if (process.env.NODE_ENV === "development" || !process.env.NODE_ENV) {
-  delete mongoose.models.Service;
-}
-
-export default mongoose.models.Service || mongoose.model("Service", ServiceSchema);
+const Service = mongoose.models.Service || mongoose.model("Service", ServiceSchema);
+export default Service;
