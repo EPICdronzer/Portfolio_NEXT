@@ -54,7 +54,7 @@ export default function Hero() {
               Web Developer
             </h2>
 
-            <p className="text-gray-400 text-base md:text-lg leading-relaxed mt-6 mb-10 max-w-lg font-light">
+            <p className="text-zinc-200 md:text-gray-400 text-base md:text-lg leading-relaxed mt-6 mb-10 max-w-lg font-normal md:font-light bg-black/40 backdrop-blur-md md:bg-transparent md:backdrop-blur-none p-4 md:p-0 rounded-2xl border border-white/5 md:border-none shadow-xl md:shadow-none">
               Building refined digital experiences from Delhi where culture, ambition, and technology collide. Creating scalable products with modern engineering and a distinctly Indian design sensibility for millions of users.
             </p>
 

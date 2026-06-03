@@ -17,12 +17,92 @@ function DashboardOverview() {
 
   const unreadMessages = messages.filter(m => !m.read);
 
-  const activities = [
-    { text: "Published ethnic wear project Mumbai Metro", time: "2 hours ago", icon: <span className="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0" /> },
-    { text: "Received message from Priya Sharma", time: "5 hours ago", icon: <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" /> },
-    { text: "Modified Junior Visual Designer timeline description", time: "1 day ago", icon: <span className="w-2.5 h-2.5 rounded-full bg-blue-400 shrink-0" /> },
-    { text: "Updated Web Development service category", time: "2 days ago", icon: <span className="w-2.5 h-2.5 rounded-full bg-purple-400 shrink-0" /> },
+  // Helper function to calculate relative time
+  const timeAgo = (dateInput) => {
+    if (!dateInput) return "some time ago";
+    const date = new Date(dateInput);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+
+    if (seconds < 0) return "just now";
+    
+    const intervals = [
+      { label: "year", seconds: 31536000 },
+      { label: "month", seconds: 2592000 },
+      { label: "week", seconds: 604800 },
+      { label: "day", seconds: 86400 },
+      { label: "hour", seconds: 3600 },
+      { label: "minute", seconds: 60 },
+      { label: "second", seconds: 1 }
+    ];
+
+    for (const interval of intervals) {
+      const count = Math.floor(seconds / interval.seconds);
+      if (count >= 1) {
+        return `${count} ${interval.label}${count > 1 ? "s" : ""} ago`;
+      }
+    }
+    return "just now";
+  };
+
+  // Helper function to get descriptive verb & noun
+  const getVerbAndNoun = (item, type) => {
+    const created = new Date(item.createdAt || item.date).getTime();
+    const updated = new Date(item.updatedAt || item.createdAt || item.date).getTime();
+    const isUpdate = Math.abs(updated - created) > 5000; // > 5 seconds difference
+
+    if (type === "project") {
+      return isUpdate ? `Modified portfolio project "${item.title}"` : `Published portfolio project "${item.title}"`;
+    }
+    if (type === "service") {
+      return isUpdate ? `Updated "${item.title}" service details` : `Added new service category "${item.title}"`;
+    }
+    if (type === "experience") {
+      return isUpdate ? `Modified "${item.role}" experience details` : `Added "${item.role}" to timeline milestones`;
+    }
+    if (type === "blog") {
+      return isUpdate ? `Updated blog article "${item.title}"` : `Published new blog article "${item.title}"`;
+    }
+    if (type === "message") {
+      return `Received message from ${item.name}`;
+    }
+    return "";
+  };
+
+  // Construct dynamic activities
+  const allActivities = [
+    ...projects.map(p => ({
+      text: getVerbAndNoun(p, "project"),
+      time: p.updatedAt || p.createdAt,
+      color: "bg-amber-400"
+    })),
+    ...services.map(s => ({
+      text: getVerbAndNoun(s, "service"),
+      time: s.updatedAt || s.createdAt,
+      color: "bg-emerald-400"
+    })),
+    ...experiences.map(e => ({
+      text: getVerbAndNoun(e, "experience"),
+      time: e.updatedAt || e.createdAt,
+      color: "bg-blue-400"
+    })),
+    ...blogs.map(b => ({
+      text: getVerbAndNoun(b, "blog"),
+      time: b.updatedAt || b.createdAt,
+      color: "bg-purple-400"
+    })),
+    ...messages.map(m => ({
+      text: getVerbAndNoun(m, "message"),
+      time: m.createdAt,
+      color: "bg-pink-500"
+    }))
   ];
+
+  // Sort activities by date descending and take top 5
+  const sortedActivities = allActivities
+    .filter(act => act.time)
+    .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+    .slice(0, 5);
 
   return (
     <main className="flex-grow p-6 md:p-10 max-w-7xl mx-auto w-full overflow-y-auto">
@@ -78,15 +158,21 @@ function DashboardOverview() {
           <div className="lg:col-span-5 bg-[#0d0d0f] border border-zinc-800 rounded-2xl p-6">
             <h3 className="font-extrabold text-white text-base mb-6">Recent Activity</h3>
             <div className="space-y-5">
-              {activities.map((act, idx) => (
-                <div key={idx} className="flex gap-3 text-xs">
-                  {act.icon}
-                  <div className="flex flex-col gap-0.5">
-                    <p className="text-zinc-300 leading-relaxed">{act.text}</p>
-                    <span className="text-sm text-zinc-500">{act.time}</span>
-                  </div>
+              {sortedActivities.length === 0 ? (
+                <div className="text-center py-8 text-zinc-500 text-sm">
+                  No recent activities recorded.
                 </div>
-              ))}
+              ) : (
+                sortedActivities.map((act, idx) => (
+                  <div key={idx} className="flex gap-3 text-xs">
+                    <span className={`w-2.5 h-2.5 rounded-full ${act.color} shrink-0 mt-1`} />
+                    <div className="flex flex-col gap-0.5">
+                      <p className="text-zinc-300 leading-relaxed">{act.text}</p>
+                      <span className="text-sm text-zinc-500">{timeAgo(act.time)}</span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

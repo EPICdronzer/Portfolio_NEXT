@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { siteConfig } from "@/app/config";
 import { useToast } from "@/app/context/ToastContext";
+import { submitMessage } from "@/backend/actions/messages";
 
 export default function ContactDetail() {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
@@ -27,6 +28,16 @@ export default function ContactDetail() {
     }
 
     addToast("Redirecting to WhatsApp...", "success");
+
+    // Asynchronously submit to DB in background
+    submitMessage({
+      name: formData.name,
+      email: formData.email,
+      subject: formData.subject || "General Contact Inquiry",
+      message: formData.message,
+    }).catch(err => {
+      console.error("Failed to submit message to DB:", err);
+    });
 
     const messageText = `*New Contact Message*
 *Name:* ${formData.name}

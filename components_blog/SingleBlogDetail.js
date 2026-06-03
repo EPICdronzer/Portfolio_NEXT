@@ -6,6 +6,7 @@ import { siteConfig } from "@/app/config";
 import { useToast } from "@/app/context/ToastContext";
 import ImageSlideshow from "@/components/ImageSlideshow";
 import { parseMarkdownToJSX } from "@/backend/lib/markdown";
+import { submitMessage } from "@/backend/actions/messages";
 
 /* ─── Fallback sidebar services (shown when DB has none) ─── */
 const FALLBACK_SERVICES = [
@@ -48,6 +49,16 @@ export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
 
     addToast("Redirecting to WhatsApp...", "success");
 
+    // Asynchronously submit comment to DB
+    submitMessage({
+      name: formData.name,
+      email: formData.email,
+      subject: `Blog Comment on "${title}"`,
+      message: formData.comment,
+    }).catch(err => {
+      console.error("Failed to submit comment to DB:", err);
+    });
+
     const messageText = `*New Blog Comment on ${title}*
 *Name:* ${formData.name}
 *Email:* ${formData.email}
@@ -67,6 +78,17 @@ export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
     }
 
     addToast("Redirecting to WhatsApp...", "success");
+
+    // Asynchronously submit newsletter sub to DB
+    submitMessage({
+      name: newsletterName,
+      email: "subscribed@via.whatsapp",
+      subject: "Newsletter Subscription Request",
+      message: `Hi Harsh, I would like to subscribe to your newsletter. My name is ${newsletterName}.`,
+    }).catch(err => {
+      console.error("Failed to submit newsletter sub to DB:", err);
+    });
+
     const msg = `Hi Harsh, I would like to subscribe to your newsletter. My name is ${newsletterName}.`;
     const whatsappUrl = `https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(msg)}`;
     window.open(whatsappUrl, "_blank");

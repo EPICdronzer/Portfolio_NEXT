@@ -124,6 +124,21 @@ export default function Blog({ initialBlogs }) {
                 </button>
               </div>
             </div>
+
+            {/* View All Articles Button */}
+            {hasData && (
+              <div className="flex justify-center mt-12">
+                <Link
+                  href="/blog"
+                  className="inline-flex items-center gap-2 bg-transparent hover:bg-emerald-500 border border-emerald-500/40 text-emerald-400 hover:text-black font-bold px-8 py-3.5 rounded-full transition-all duration-300 shadow-lg text-xs tracking-wider uppercase"
+                >
+                  View All Articles
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </Link>
+              </div>
+            )}
           </>
         )}
       </div>

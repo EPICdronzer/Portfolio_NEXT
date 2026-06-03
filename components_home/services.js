@@ -189,7 +189,7 @@ export default function Services({ initialServices }) {
     });
   }
 
-  const currentServices = grouped[activeTab] || [];
+  const currentServices = (grouped[activeTab] || []).slice(0, 3);
 
   return (
     <section id="service" className="bg-[#121212] py-24 px-6 md:px-12 lg:px-24">
@@ -299,8 +299,8 @@ export default function Services({ initialServices }) {
                     <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
                       isOpen ? "max-h-48 opacity-100" : "max-h-0 opacity-0"
                     }`}>
-                      <div className="px-4 pb-4 pt-0 space-y-3 border-t border-zinc-800">
-                        <p className="text-gray-400 text-xs leading-relaxed pt-3">{stripMarkdown(service.desc)}</p>
+                      <div className="px-4 pb-6 pt-0 space-y-3 border-t border-zinc-800">
+                        <p className="text-gray-400 text-xs leading-relaxed pt-3 line-clamp-3">{stripMarkdown(service.desc)}</p>
                         <Link
                           href={`/service/${service.id}`}
                           className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs px-4 py-2 rounded-full transition-colors duration-200"
@@ -336,6 +336,21 @@ export default function Services({ initialServices }) {
                 </Link>
               ))}
             </div>
+
+            {/* View All Services Button */}
+            {hasData && (
+              <div className="flex justify-center mt-12">
+                <Link
+                  href="/service"
+                  className="inline-flex items-center gap-2 bg-transparent hover:bg-amber-400 border border-amber-400/40 text-amber-400 hover:text-black font-bold px-8 py-3.5 rounded-full transition-all duration-300 shadow-lg text-xs tracking-wider uppercase"
+                >
+                  View All Services
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </Link>
+              </div>
+            )}
           </>
         )}
 

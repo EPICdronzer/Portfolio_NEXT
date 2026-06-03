@@ -213,7 +213,7 @@ export default function ServiceDetail({ initialServices }) {
         </div>
 
         {filtered.length === 0 && (
-          <p className="text-center py-16 text-gray-500">No services found for &ldquo;{search}&rdquo;</p>
+          <p className="text-center py-16 text-gray-500">No services found</p>
         )}
 
         {/* ── MOBILE: Blog-style accordion list ── */}

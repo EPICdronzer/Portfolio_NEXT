@@ -185,12 +185,17 @@ export function parseMarkdownToJSX(content) {
   if (!content) return null;
 
   const contentStr = typeof content === "string" ? content : "";
-  // Normalize Windows line endings
-  const lines = contentStr.replace(/\r\n/g, "\n").split("\n");
+  // Pre-process collapsed table rows where " | | " or " || " occurs due to joined paragraphs
+  const processedContent = contentStr
+    .replace(/\|\s*\|/g, "|\n|")
+    .replace(/\r\n/g, "\n");
+
+  const lines = processedContent.split("\n");
 
   const blocks = [];
   let currentCodeBlock = null;
   let currentListBlock = null;
+  let currentTableBlock = null;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -215,6 +220,10 @@ export function parseMarkdownToJSX(content) {
         blocks.push(currentListBlock);
         currentListBlock = null;
       }
+      if (currentTableBlock) {
+        blocks.push(currentTableBlock);
+        currentTableBlock = null;
+      }
       continue;
     }
 
@@ -223,7 +232,50 @@ export function parseMarkdownToJSX(content) {
       continue;
     }
 
-    // 2. Handle Headings
+    // 2. Handle Horizontal Rule (---)
+    if (trimmedLine === "---") {
+      if (currentListBlock) {
+        blocks.push(currentListBlock);
+        currentListBlock = null;
+      }
+      if (currentTableBlock) {
+        blocks.push(currentTableBlock);
+        currentTableBlock = null;
+      }
+      blocks.push({ type: "hr" });
+      continue;
+    }
+
+    // 3. Handle Table Rows: starts with "|" and ends with "|"
+    const isTableRow = trimmedLine.startsWith("|") && trimmedLine.endsWith("|");
+    if (isTableRow) {
+      if (currentListBlock) {
+        blocks.push(currentListBlock);
+        currentListBlock = null;
+      }
+
+      // Check if it's a separator line (e.g. |---|---|)
+      const isSeparator = /^[|\s-:]+$/.test(trimmedLine) && trimmedLine.includes("-");
+      if (!isSeparator) {
+        const cells = trimmedLine
+          .split("|")
+          .slice(1, -1) // remove first and last empty elements
+          .map((cell) => cell.trim());
+
+        if (!currentTableBlock) {
+          currentTableBlock = { type: "table", rows: [] };
+        }
+        currentTableBlock.rows.push(cells);
+      }
+      continue;
+    } else {
+      if (currentTableBlock) {
+        blocks.push(currentTableBlock);
+        currentTableBlock = null;
+      }
+    }
+
+    // 4. Handle Headings
     if (trimmedLine.startsWith("# ")) {
       if (currentListBlock) {
         blocks.push(currentListBlock);
@@ -257,13 +309,12 @@ export function parseMarkdownToJSX(content) {
       continue;
     }
 
-    // 3. Handle Lists (Starts with "* " or "- ")
+    // 5. Handle Lists (Starts with "* " or "- ")
     const isBulletItem = trimmedLine.startsWith("* ") || trimmedLine.startsWith("- ");
     if (isBulletItem) {
       const listContent = trimmedLine.slice(2).trim();
 
       // Support inline list separation in single line (e.g. "* item 1 * item 2")
-      // Check if line contains " * " or " - " after stripping initial marker
       const marker = trimmedLine.startsWith("* ") ? " * " : " - ";
       let items = [];
       if (listContent.includes(marker)) {
@@ -279,7 +330,7 @@ export function parseMarkdownToJSX(content) {
       continue;
     }
 
-    // 4. Handle Blank Lines
+    // 6. Handle Blank Lines
     if (trimmedLine === "") {
       if (currentListBlock) {
         blocks.push(currentListBlock);
@@ -288,7 +339,7 @@ export function parseMarkdownToJSX(content) {
       continue;
     }
 
-    // 5. Handle Paragraphs (Normal text)
+    // 7. Handle Paragraphs (Normal text)
     if (currentListBlock) {
       blocks.push(currentListBlock);
       currentListBlock = null;
@@ -306,6 +357,9 @@ export function parseMarkdownToJSX(content) {
   // Push remaining blocks
   if (currentListBlock) {
     blocks.push(currentListBlock);
+  }
+  if (currentTableBlock) {
+    blocks.push(currentTableBlock);
   }
   if (currentCodeBlock) {
     blocks.push({
@@ -352,6 +406,37 @@ export function parseMarkdownToJSX(content) {
             ))}
           </ul>
         );
+      case "table":
+        const headerRow = block.rows[0] || [];
+        const bodyRows = block.rows.slice(1);
+        return (
+          <div key={index} className="overflow-x-auto my-6 rounded-2xl border border-white/5 bg-[#141414]/50 shadow-xl scrollbar-hide">
+            <table className="min-w-full divide-y divide-white/5 border-collapse">
+              <thead className="bg-white/[0.02]">
+                <tr>
+                  {headerRow.map((cell, idx) => (
+                    <th key={idx} className="px-6 py-3.5 text-left text-xs font-bold text-white uppercase tracking-wider border-b border-white/5">
+                      {parseInline(cell)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {bodyRows.map((row, rowIdx) => (
+                  <tr key={rowIdx} className="hover:bg-white/[0.01] transition-colors">
+                    {row.map((cell, cellIdx) => (
+                      <td key={cellIdx} className="px-6 py-4 text-sm text-gray-300 font-light whitespace-nowrap">
+                        {parseInline(cell)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      case "hr":
+        return <hr key={index} className="border-white/5 my-8" />;
       case "code-block":
         return <CodeBlock key={index} code={block.code} language={block.language} />;
       case "paragraph":

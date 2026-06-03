@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { siteConfig } from "@/app/config";
 import { useToast } from "@/app/context/ToastContext";
+import { submitMessage } from "@/backend/actions/messages";
 
 const socialLinks = [
   
@@ -71,6 +72,17 @@ export default function Footer() {
     }
     
     addToast("Redirecting to WhatsApp...", "success");
+
+    // Asynchronously submit newsletter sub to DB
+    submitMessage({
+      name: name,
+      email: "subscribed@via.whatsapp",
+      subject: "Newsletter Subscription Request (Footer)",
+      message: `Hi Harsh, I would like to subscribe to your newsletter. My name is ${name}.`,
+    }).catch(err => {
+      console.error("Failed to submit newsletter sub to DB:", err);
+    });
+
     const message = `Hi Harsh, I would like to subscribe to your newsletter. My name is ${name}.`;
     const whatsappUrl = `https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");

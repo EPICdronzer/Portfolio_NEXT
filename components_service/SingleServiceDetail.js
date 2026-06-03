@@ -6,6 +6,7 @@ import { siteConfig } from "@/app/config";
 import { useToast } from "@/app/context/ToastContext";
 import ImageSlideshow from "@/components/ImageSlideshow";
 import { parseMarkdownToJSX, parseInline } from "@/backend/lib/markdown";
+import { submitMessage } from "@/backend/actions/messages";
 
 export default function SingleServiceDetail({ serviceId, initialService, initialAllServices }) {
   const [formData, setFormData] = useState({ name: "", email: "", service: serviceId, message: "" });
@@ -50,6 +51,17 @@ export default function SingleServiceDetail({ serviceId, initialService, initial
     if (!emailRegex.test(formData.email)) { addToast("Please enter a valid email address.", "error"); return; }
     if (!formData.message.trim()) { addToast("Please enter a message.", "error"); return; }
     addToast("Redirecting to WhatsApp...", "success");
+
+    // Asynchronously submit inquiry to DB
+    submitMessage({
+      name: formData.name,
+      email: formData.email,
+      subject: `Project Inquiry: ${currentService.title}`,
+      message: formData.message,
+    }).catch(err => {
+      console.error("Failed to submit inquiry to DB:", err);
+    });
+
     const messageText = `*New Project Inquiry for ${currentService.title}*\n*Name:* ${formData.name}\n*Email:* ${formData.email}\n*Service:* ${currentService.title}\n*Message:* ${formData.message}`;
     const whatsappUrl = `https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(messageText)}`;
     window.open(whatsappUrl, "_blank");
@@ -60,6 +72,17 @@ export default function SingleServiceDetail({ serviceId, initialService, initial
     e.preventDefault();
     if (!newsletterName.trim()) { addToast("Please enter your name.", "error"); return; }
     addToast("Redirecting to WhatsApp...", "success");
+
+    // Asynchronously submit newsletter sub to DB
+    submitMessage({
+      name: newsletterName,
+      email: "subscribed@via.whatsapp",
+      subject: "Newsletter Subscription Request",
+      message: `Hi Harsh, I would like to subscribe to your newsletter. My name is ${newsletterName}.`,
+    }).catch(err => {
+      console.error("Failed to submit newsletter sub to DB:", err);
+    });
+
     const msg = `Hi Harsh, I would like to subscribe to your newsletter. My name is ${newsletterName}.`;
     const whatsappUrl = `https://wa.me/${siteConfig.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(msg)}`;
     window.open(whatsappUrl, "_blank");
