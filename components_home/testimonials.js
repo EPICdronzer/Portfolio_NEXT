@@ -6,26 +6,26 @@ import Image from "next/image";
 const testimonials = [
   {
     id: "t-1",
-    name: "Cathi Falcon",
-    role: "Software Engineer",
+    name: "Aman Gupta",
+    role: "Founder, FinEdge Technologies",
     quote:
-      "Many desktop publishing packages and editors now use as their. It is a long established fact that a reader will be distracted by the readable content of page when looking at its layout point of using is that it has more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making look like readable English.",
+      "Our vision was translated into a polished and high-performing digital product. The focus on scalability, design consistency, and user experience helped us launch with confidence and attract our first customers quickly.",
     avatarIndex: 0,
   },
   {
     id: "t-2",
-    name: "Marcus Reid",
-    role: "Product Designer",
+    name: "Neha Kapoor",
+    role: "Software Engineer",
     quote:
-      "Working with Aliza transformed our brand completely. The attention to detail and creative vision brought something truly special to our project. Every pixel was crafted with purpose and the results exceeded all of our expectations.",
+      "The code quality and architecture were impressive from day one. Every feature was thoughtfully implemented, resulting in a fast, responsive, and maintainable application that our team could easily build upon.",
     avatarIndex: 1,
   },
   {
     id: "t-3",
-    name: "Sophia Chen",
-    role: "CEO, Innovate Studio",
+    name: "Vikram Singh",
+    role: "CEO, GrowthStack Labs",
     quote:
-      "An exceptional designer who blends technical skill with artistic brilliance. The deliverables were always on time, on budget, and beyond what we imagined. I would recommend this portfolio to anyone looking for world-class design work.",
+      "A highly skilled developer with a strong understanding of both business requirements and technical execution. The project was delivered on schedule, and the final outcome exceeded our expectations in every aspect.",
     avatarIndex: 2,
   },
 ];
