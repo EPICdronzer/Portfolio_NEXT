@@ -94,16 +94,18 @@ export async function updatePortfolio(id, data) {
 
     const newImages = Array.isArray(data.images) ? data.images.filter(Boolean) : [];
 
-    if (data.imageMode === "append" && newImages.length > 0) {
-      // Push new images to existing array
-      const existing = await Portfolio.findById(id).select("images image");
-      const merged = [...(existing?.images || []), ...newImages];
-      updateDoc.images = merged;
-      updateDoc.image  = merged[0] || existing?.image || "/portfolio_screenshots.png";
-    } else if (newImages.length > 0) {
+    if (data.imageMode === "append") {
+      if (newImages.length > 0) {
+        // Push new images to existing array
+        const existing = await Portfolio.findById(id).select("images image");
+        const merged = [...(existing?.images || []), ...newImages];
+        updateDoc.images = merged;
+        updateDoc.image  = merged[0] || existing?.image || "/portfolio_screenshots.png";
+      }
+    } else {
       // Replace
       updateDoc.images = newImages;
-      updateDoc.image  = newImages[0];
+      updateDoc.image  = newImages[0] || "/portfolio_screenshots.png";
     }
 
     const portfolio = await Portfolio.findByIdAndUpdate(id, updateDoc, { new: true });

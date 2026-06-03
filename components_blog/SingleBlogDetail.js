@@ -176,6 +176,17 @@ export default function SingleBlogDetail({ initialBlog, initialAllServices }) {
               </div>
             </div>
 
+            {/* Additional Blog Images Gallery */}
+            {initialBlog.images && initialBlog.images.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                {initialBlog.images.map((img, idx) => (
+                  <div key={idx} className="relative h-60 rounded-2xl overflow-hidden border border-white/5 bg-zinc-900 shadow-md">
+                    <img src={img} alt={`Blog additional-${idx}`} className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Code snippet block */}
             <div className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 font-mono text-xs overflow-x-auto text-emerald-400">
               <span className="text-gray-500">// Example next.js Server Component</span><br />

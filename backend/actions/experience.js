@@ -48,6 +48,9 @@ export async function addExperience(data) {
     console.log("🎯 Logo URL:", data.logo);
     console.log("🎯 Logo present?:", !!data.logo);
     
+    const images = Array.isArray(data.images) ? data.images.filter(Boolean) : [];
+    const image  = images[0] || data.image || "";
+
     const experience = await Experience.create({
       startMonth:   data.startMonth   || "",
       startYear:    data.startYear,
@@ -57,6 +60,8 @@ export async function addExperience(data) {
       company:      data.company,
       companyExtra: data.companyExtra || "",
       logo:         data.logo         || "",
+      image,
+      images,
       href:         data.href         || "#",
       order: count,
     });
@@ -83,22 +88,34 @@ export async function addExperience(data) {
 export async function updateExperience(id, data) {
   try {
     await connect();
-    const experience = await Experience.findByIdAndUpdate(
-      id,
-      {
-        ...(data.startMonth   !== undefined && { startMonth:   data.startMonth }),
-        ...(data.startYear    !== undefined && { startYear:    data.startYear }),
-        ...(data.endMonth     !== undefined && { endMonth:     data.endMonth }),
-        ...(data.endYear      !== undefined && { endYear:      data.endYear }),
-        ...(data.role         !== undefined && { role:         data.role }),
-        ...(data.company      !== undefined && { company:      data.company }),
-        ...(data.companyExtra !== undefined && { companyExtra: data.companyExtra }),
-        ...(data.logo         !== undefined && { logo:         data.logo }),
-        ...(data.href         !== undefined && { href:         data.href }),
-        ...(data.order        !== undefined && { order:        data.order }),
-      },
-      { new: true }
-    );
+    const newImages = Array.isArray(data.images) ? data.images.filter(Boolean) : [];
+    
+    let updateFields = {
+      ...(data.startMonth   !== undefined && { startMonth:   data.startMonth }),
+      ...(data.startYear    !== undefined && { startYear:    data.startYear }),
+      ...(data.endMonth     !== undefined && { endMonth:     data.endMonth }),
+      ...(data.endYear      !== undefined && { endYear:      data.endYear }),
+      ...(data.role         !== undefined && { role:         data.role }),
+      ...(data.company      !== undefined && { company:      data.company }),
+      ...(data.companyExtra !== undefined && { companyExtra: data.companyExtra }),
+      ...(data.logo         !== undefined && { logo:         data.logo }),
+      ...(data.href         !== undefined && { href:         data.href }),
+      ...(data.order        !== undefined && { order:        data.order }),
+    };
+
+    if (data.imageMode === "append") {
+      if (newImages.length > 0) {
+        const existing = await Experience.findById(id).select("images image");
+        const merged = [...(existing?.images || []), ...newImages];
+        updateFields.images = merged;
+        updateFields.image  = merged[0] || existing?.image || "";
+      }
+    } else {
+      updateFields.images = newImages;
+      updateFields.image  = newImages[0] || "";
+    }
+
+    const experience = await Experience.findByIdAndUpdate(id, updateFields, { new: true });
     if (!experience) return { success: false, error: "Experience not found" };
     const serialized = serializeExp(experience);
     serialized.period = buildPeriod(experience);

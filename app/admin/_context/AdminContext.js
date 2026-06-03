@@ -44,7 +44,7 @@ export function AdminProvider({ children }) {
 
   // Form fields — each section has its own form state
   const defaultFormService = { category: "Development", title: "", desc: "", iconName: "code", slug: "", images: [], imageMode: "replace" };
-  const defaultFormExp = { startMonth: "", startYear: "", endMonth: "", endYear: "", role: "", company: "", companyExtra: "", logo: "", href: "#" };
+  const defaultFormExp = { startMonth: "", startYear: "", endMonth: "", endYear: "", role: "", company: "", companyExtra: "", logo: "", images: [], imageMode: "replace", href: "#" };
   const defaultFormProj = { title: "", category: "", desc: "", details: "", tech: "", images: [], imgPos: "object-center", href: "#", slug: "", imageMode: "replace" };
   const defaultFormBlog = { title: "", date: "", category: "Development", author: "Harsh Vashishth", readTime: "4 min read", images: [], imgPos: "object-center", content: "", slug: "", imageMode: "replace" };
 
@@ -221,6 +221,8 @@ export function AdminProvider({ children }) {
         company:      item.company      || "",
         companyExtra: item.companyExtra || "",
         logo:         item.logo         || "",
+        images:       item.images       || (item.image ? [item.image] : []),
+        imageMode:    "replace",
         href:         item.href         || "#",
       });
     }

@@ -10,9 +10,16 @@ const ExperienceSchema = new mongoose.Schema({
   company:    { type: String, required: true },
   companyExtra: { type: String, default: "" }, // e.g. "(Remote)"
   logo:       { type: String, default: "" },   // Company logo URL from Cloudinary
+  image:      { type: String, default: "" },   // Cover/main image URL (optional)
+  images:     [{ type: String }],              // Gallery/extra images
   // Website link shown as "Go to website"
   href: { type: String, default: "#" },
   order: { type: Number, default: 0 },
 }, { timestamps: true });
+
+// Force clear cached model in development to prevent Mongoose schema hot-reload cache bugs
+if (process.env.NODE_ENV === "development" || !process.env.NODE_ENV) {
+  delete mongoose.models.Experience;
+}
 
 export default mongoose.models.Experience || mongoose.model("Experience", ExperienceSchema);

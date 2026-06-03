@@ -368,14 +368,27 @@ export default function AdminModal() {
                 <label className={labelCls}>Company Website</label>
                 <input type="text" value={formExp.href} onChange={e => setFormExp({ ...formExp, href: e.target.value })} className={inputCls} placeholder="https://..." />
               </div>
-              <SingleImageUploader
-                image={formExp.logo || ""}
-                setImage={url => setFormExp({ ...formExp, logo: url })}
+              <FieldRow>
+                <SingleImageUploader
+                  image={formExp.logo || ""}
+                  setImage={url => setFormExp({ ...formExp, logo: url })}
+                  uploading={uploading}
+                  setUploading={setUploading}
+                  showAlert={showAlert}
+                  uploadId="exp-logo-upload"
+                  label="Company Logo"
+                />
+              </FieldRow>
+              <MultiImageUploader
+                images={formExp.images || []}
+                setImages={imgs => setFormExp(prev => ({ ...prev, images: imgs }))}
+                imageMode={formExp.imageMode || "replace"}
+                setImageMode={mode => setFormExp(prev => ({ ...prev, imageMode: mode }))}
+                isEdit={isEdit}
                 uploading={uploading}
                 setUploading={setUploading}
                 showAlert={showAlert}
-                uploadId="exp-logo-upload"
-                label="Company Logo"
+                uploadId="experience-upload"
               />
             </>
           )}

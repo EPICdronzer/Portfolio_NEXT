@@ -137,6 +137,17 @@ export default function Experience({ initialExperiences }) {
                     )}
                   </p>
 
+                  {/* Experience Gallery */}
+                  {exp.images && exp.images.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 justify-center mt-3 mb-1">
+                      {exp.images.map((img, idx) => (
+                        <div key={idx} className="relative w-12 h-10 rounded-lg overflow-hidden border border-zinc-700">
+                          <img src={img} alt={`work-${idx}`} className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Link */}
                   <a
                     href={exp.href || "#"}
@@ -182,6 +193,17 @@ export default function Experience({ initialExperiences }) {
                       <span className="text-gray-500 font-normal"> {exp.companyExtra}</span>
                     )}
                   </p>
+
+                  {/* Experience Gallery */}
+                  {exp.images && exp.images.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 justify-center mt-4">
+                      {exp.images.map((img, idx) => (
+                        <div key={idx} className="relative w-12 h-10 rounded-lg overflow-hidden border border-zinc-700">
+                          <img src={img} alt={`work-${idx}`} className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Link */}
                   <a

@@ -124,6 +124,26 @@ export default function SinglePortfolioDetail({ initialPortfolio }) {
           )}
         </div>
 
+        {/* Project Gallery */}
+        {project.images && project.images.length > 0 && (
+          <div className="bg-[#111] border border-white/5 rounded-3xl p-8 md:p-12 mb-12">
+            <h2 className="text-2xl font-bold text-white mb-6">Project Gallery</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {project.images.map((img, idx) => (
+                <div key={idx} className="relative aspect-video rounded-2xl overflow-hidden border border-white/5 shadow-lg group">
+                  <Image
+                    src={img}
+                    alt={`${title} Gallery Image ${idx + 1}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 400px"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4">
           {href && href !== "#" && (

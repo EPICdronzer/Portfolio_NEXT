@@ -79,14 +79,16 @@ export async function updateBlog(id, data) {
 
     const newImages = Array.isArray(data.images) ? data.images.filter(Boolean) : [];
 
-    if (data.imageMode === "append" && newImages.length > 0) {
-      const existing = await Blog.findById(id).select("images image");
-      const merged = [...(existing?.images || []), ...newImages];
-      updateDoc.images = merged;
-      updateDoc.image  = merged[0] || existing?.image || "/blog_thumbnails.png";
-    } else if (newImages.length > 0) {
+    if (data.imageMode === "append") {
+      if (newImages.length > 0) {
+        const existing = await Blog.findById(id).select("images image");
+        const merged = [...(existing?.images || []), ...newImages];
+        updateDoc.images = merged;
+        updateDoc.image  = merged[0] || existing?.image || "/blog_thumbnails.png";
+      }
+    } else {
       updateDoc.images = newImages;
-      updateDoc.image  = newImages[0];
+      updateDoc.image  = newImages[0] || "/blog_thumbnails.png";
     }
 
     const blog = await Blog.findByIdAndUpdate(id, updateDoc, { new: true });
