@@ -16,8 +16,9 @@ import { getBlogs } from "@/backend/actions/blog";
 export const revalidate = 0; // Don't cache - always fetch fresh data
 
 export const metadata = {
-  title: "Harsh Vashishth - Creative Portfolio",
-  description: "Modern portfolio for Aliza, Fashion Designer.",
+  title: "Harsh Vashishth | Full Stack Developer",
+  description:
+    "Harsh Vashishth is a Full Stack Developer passionate about building scalable web applications using Next.js, React, Node.js, MongoDB, and modern technologies.",
 };
 
 export default async function Page() {
