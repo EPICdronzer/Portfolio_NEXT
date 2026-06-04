@@ -72,8 +72,6 @@ export default function Footer() {
     }
     
     addToast("Redirecting to WhatsApp...", "success");
-
-    // Asynchronously submit newsletter sub to DB
     submitMessage({
       name: name,
       email: "subscribed@via.whatsapp",
@@ -92,9 +90,8 @@ export default function Footer() {
   return (
     <footer id="contact" className="bg-[#121212]">
 
-      {/* ── Full-bleed CTA Banner ── */}
       <div
-        className="mx-4 md:mx-10 lg:mx-16 mt-8 px-6 md:px-16 py-14 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden rounded-3xl"
+        className="mt-8 px-6 md:px-16 py-14 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden w-full"
         style={{ background: "linear-gradient(135deg, #059669 0%, #047857 100%)" }}
       >
         {/* Concentric circle rings pattern overlay */}
@@ -110,7 +107,6 @@ export default function Footer() {
           <circle cx="15%" cy="50%" r="200" stroke="white" strokeWidth="1.5" fill="none" />
           <circle cx="15%" cy="50%" r="260" stroke="white" strokeWidth="1.5" fill="none" />
           <circle cx="15%" cy="50%" r="320" stroke="white" strokeWidth="1.5" fill="none" />
-          {/* Right cluster */}
           <circle cx="85%" cy="50%" r="80"  stroke="white" strokeWidth="1.5" fill="none" />
           <circle cx="85%" cy="50%" r="140" stroke="white" strokeWidth="1.5" fill="none" />
           <circle cx="85%" cy="50%" r="200" stroke="white" strokeWidth="1.5" fill="none" />

@@ -9,9 +9,20 @@ export default function Portfolio({ initialPortfolios }) {
   const displayProjects = hasData ? initialPortfolios : [];
 
   const [current, setCurrent] = useState(0);
+  const [fading, setFading] = useState(false);
   const perPage = 3;
   const totalPages = Math.ceil(displayProjects.length / perPage);
   const visible = displayProjects.slice(current * perPage, current * perPage + perPage);
+
+  /* Smooth page-change: fade out → swap → fade in */
+  const goTo = (next) => {
+    if (next === current || fading) return;
+    setFading(true);
+    setTimeout(() => {
+      setCurrent(next);
+      setFading(false);
+    }, 280);
+  };
 
   return (
     <section
@@ -86,9 +97,17 @@ export default function Portfolio({ initialPortfolios }) {
               })}
             </div>
 
-            {/* Desktop: 3-column grid */}
+            {/* Desktop: 3-column grid with fade transition */}
             <div className="hidden md:block">
-              <div className="grid grid-cols-3 gap-6 mb-10">
+              {/* Animated cards wrapper */}
+              <div
+                className="grid grid-cols-3 gap-6 mb-10"
+                style={{
+                  opacity: fading ? 0 : 1,
+                  transform: fading ? "translateY(14px)" : "translateY(0)",
+                  transition: "opacity 0.28s cubic-bezier(0.4,0,0.2,1), transform 0.28s cubic-bezier(0.4,0,0.2,1)",
+                }}
+              >
                 {visible.map((project) => {
                   const allImages = Array.isArray(project.images) && project.images.length > 0 ? project.images : (project.image ? [project.image] : []);
                   return (
@@ -111,13 +130,49 @@ export default function Portfolio({ initialPortfolios }) {
                   );
                 })}
               </div>
+
+              {/* Pagination arrows + dots */}
               {totalPages > 1 && (
-                <div className="flex justify-center gap-3">
-                  <button onClick={() => setCurrent((p) => Math.max(0, p - 1))} disabled={current === 0} className="w-10 h-10 rounded-full border border-zinc-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                <div className="flex justify-center items-center gap-3">
+                  <button
+                    onClick={() => goTo(Math.max(0, current - 1))}
+                    disabled={current === 0 || fading}
+                    className="group w-10 h-10 rounded-full border border-zinc-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300"
+                    aria-label="Previous"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
                   </button>
-                  <button onClick={() => setCurrent((p) => Math.min(totalPages - 1, p + 1))} disabled={current === totalPages - 1} className="w-10 h-10 rounded-full border border-zinc-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+
+                  {/* Animated page indicator dots */}
+                  <div className="flex items-center gap-2">
+                    {Array.from({ length: totalPages }, (_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => goTo(i)}
+                        disabled={fading}
+                        className="rounded-full transition-all duration-300"
+                        style={{
+                          width: current === i ? "24px" : "8px",
+                          height: "8px",
+                          background: current === i ? "#34d399" : "rgba(255,255,255,0.2)",
+                          boxShadow: current === i ? "0 0 10px #34d39960" : "none",
+                        }}
+                        aria-label={`Page ${i + 1}`}
+                      />
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => goTo(Math.min(totalPages - 1, current + 1))}
+                    disabled={current === totalPages - 1 || fading}
+                    className="group w-10 h-10 rounded-full border border-zinc-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300"
+                    aria-label="Next"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
                   </button>
                 </div>
               )}

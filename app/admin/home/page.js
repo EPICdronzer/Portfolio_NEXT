@@ -139,7 +139,7 @@ function DashboardOverview() {
               ) : (
                 unreadMessages.map(msg => (
                   <div
-                    key={msg.id}
+                    key={msg._id}
                     onClick={() => setViewMessage(msg)}
                     className="p-4 rounded-xl bg-[#141417] hover:bg-zinc-800/40 border border-zinc-800/50 cursor-pointer transition-colors duration-200"
                   >
