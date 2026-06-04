@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { stripMarkdown, parseInline } from "@/backend/lib/markdown";
 
 
@@ -112,11 +113,19 @@ const getServiceIcon = (name) => {
 
 export default function ServiceDetail({ initialServices }) {
   const hasData = initialServices && initialServices.length > 0;
+  const searchParams = useSearchParams();
   const [activeCat, setActiveCat] = useState("Development");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => searchParams.get("search") || "");
   const [page, setPage] = useState(1);
   const [expandedId, setExpandedId] = useState(null);
   const SERVICES_PER_PAGE = 3;
+
+  // Sync URL ?search= param on navigation
+  useEffect(() => {
+    const q = searchParams.get("search") || "";
+    setSearch(q);
+    setPage(1);
+  }, [searchParams]);
 
   const toggleAccordion = (id) => setExpandedId(prev => prev === id ? null : id);
 
@@ -135,8 +144,9 @@ export default function ServiceDetail({ initialServices }) {
     : [];
 
   const filtered = displayData.filter((item) => {
-    const matchesCat = item.category === activeCat;
     const q = search.toLowerCase();
+    // When a search query is active, ignore category filter so results aren't hidden
+    const matchesCat = q ? true : item.category === activeCat;
     const matchesSearch =
       !q ||
       item.title.toLowerCase().includes(q) ||

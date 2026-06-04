@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { stripMarkdown } from "@/backend/lib/markdown";
 
 const blogsDetailed = [
@@ -93,9 +94,17 @@ export default function BlogDetail({ initialBlogs }) {
       }))
     : [];
 
-  const [search, setSearch] = useState("");
+  const searchParams = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get("search") || "");
   const [page, setPage] = useState(1);
   const [expandedId, setExpandedId] = useState(null);
+
+  // Sync URL ?search= param if it changes (e.g. browser back/forward)
+  useEffect(() => {
+    const q = searchParams.get("search") || "";
+    setSearch(q);
+    setPage(1);
+  }, [searchParams]);
 
   // Filter by search
   const filtered = displayBlogs.filter(

@@ -9,9 +9,20 @@ export default function Blog({ initialBlogs }) {
   const displayBlogs = hasData ? initialBlogs : [];
 
   const [current, setCurrent] = useState(0);
+  const [fading, setFading] = useState(false);
   const perPage = 3;
   const totalPages = Math.ceil(displayBlogs.length / perPage);
   const visible = displayBlogs.slice(current * perPage, current * perPage + perPage);
+
+  /* Smooth page-change: fade out → swap → fade in */
+  const goTo = (next) => {
+    if (next === current || fading) return;
+    setFading(true);
+    setTimeout(() => {
+      setCurrent(next);
+      setFading(false);
+    }, 280);
+  };
 
   return (
     <section id="blog" className="bg-[#111] py-24 px-6 md:px-12 lg:px-24 relative overflow-hidden">
@@ -79,14 +90,24 @@ export default function Blog({ initialBlogs }) {
             {/* Desktop: grid with side arrows */}
             <div className="hidden md:block">
               <div className="relative flex items-center gap-4">
+                {/* Left arrow */}
                 <button
-                  onClick={() => setCurrent((c) => Math.max(0, c - 1))}
-                  disabled={current === 0}
-                  className="flex w-10 h-10 rounded-full border border-zinc-700 items-center justify-center text-gray-400 hover:text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 flex-shrink-0"
+                  onClick={() => goTo(Math.max(0, current - 1))}
+                  disabled={current === 0 || fading}
+                  className="group flex w-10 h-10 rounded-full border border-zinc-700 items-center justify-center text-gray-400 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 flex-shrink-0"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
                 </button>
-                <div className="grid grid-cols-3 gap-6 flex-grow">
+
+                {/* Animated cards grid */}
+                <div
+                  className="grid grid-cols-3 gap-6 flex-grow"
+                  style={{
+                    opacity: fading ? 0 : 1,
+                    transform: fading ? "translateY(14px)" : "translateY(0)",
+                    transition: "opacity 0.28s cubic-bezier(0.4,0,0.2,1), transform 0.28s cubic-bezier(0.4,0,0.2,1)",
+                  }}
+                >
                   {visible.map((post) => {
                     const allImages = Array.isArray(post.images) && post.images.length > 0 ? post.images : (post.image ? [post.image] : []);
                     return (
@@ -115,14 +136,37 @@ export default function Blog({ initialBlogs }) {
                     );
                   })}
                 </div>
+
+                {/* Right arrow */}
                 <button
-                  onClick={() => setCurrent((c) => Math.min(totalPages - 1, c + 1))}
-                  disabled={current === totalPages - 1}
-                  className="flex w-10 h-10 rounded-full border border-zinc-700 items-center justify-center text-gray-400 hover:text-white hover:border-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 flex-shrink-0"
+                  onClick={() => goTo(Math.min(totalPages - 1, current + 1))}
+                  disabled={current === totalPages - 1 || fading}
+                  className="group flex w-10 h-10 rounded-full border border-zinc-700 items-center justify-center text-gray-400 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 flex-shrink-0"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                 </button>
               </div>
+
+              {/* Dot indicators */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-6">
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => goTo(i)}
+                      disabled={fading}
+                      className="rounded-full transition-all duration-300"
+                      style={{
+                        width: current === i ? "24px" : "8px",
+                        height: "8px",
+                        background: current === i ? "#34d399" : "rgba(255,255,255,0.2)",
+                        boxShadow: current === i ? "0 0 10px #34d39960" : "none",
+                      }}
+                      aria-label={`Page ${i + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* View All Articles Button */}

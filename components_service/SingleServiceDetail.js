@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { siteConfig } from "@/app/config";
 import { useToast } from "@/app/context/ToastContext";
 import ImageSlideshow from "@/components/ImageSlideshow";
@@ -11,7 +12,16 @@ import { submitMessage } from "@/backend/actions/messages";
 export default function SingleServiceDetail({ serviceId, initialService, initialAllServices }) {
   const [formData, setFormData] = useState({ name: "", email: "", service: serviceId, message: "" });
   const [newsletterName, setNewsletterName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const { addToast } = useToast();
+  const router = useRouter();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    router.push(`/service?search=${encodeURIComponent(q)}`);
+  };
 
   /* ── Build service data from DB ── */
   const currentService = initialService
@@ -218,14 +228,23 @@ export default function SingleServiceDetail({ serviceId, initialService, initial
           <aside className="lg:col-span-4 space-y-8">
             {/* Search */}
             <div className="bg-[#181818] border border-white/5 rounded-2xl p-6">
-              <div className="flex gap-2">
-                <input type="text" placeholder="Search Post.." className="flex-grow bg-[#111111] border border-zinc-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-emerald-500" />
-                <button className="w-10 h-10 bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center text-black rounded-xl transition-colors">
+              <form onSubmit={handleSearch} className="flex gap-2">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search Service.."
+                  className="flex-grow bg-[#111111] border border-zinc-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-emerald-500"
+                />
+                <button
+                  type="submit"
+                  className="w-10 h-10 bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center text-black rounded-xl transition-colors flex-shrink-0"
+                >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </button>
-              </div>
+              </form>
             </div>
 
             {/* Services List */}
